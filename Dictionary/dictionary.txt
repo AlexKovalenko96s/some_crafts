@@ -1,0 +1,10 @@
+door - дверь;
+window - окно;
+table - стол;
+chair - стул;
+clock - часы;
+bed - кровать;
+computer - компьютер;
+sofa - диван;
+cupboard - шкаф;
+CR7 - pidoras;
