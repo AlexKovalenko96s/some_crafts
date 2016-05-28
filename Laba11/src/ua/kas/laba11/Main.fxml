@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="274.0" prefWidth="525.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ua.kas.laba11.Controller">
+   <children>
+      <Button layoutX="174.0" layoutY="24.0" mnemonicParsing="false" onAction="#first_btn" prefHeight="25.0" prefWidth="351.0" text="вывод на экран всех полей каждого элемента коллекции" />
+      <Button layoutX="174.0" layoutY="59.0" mnemonicParsing="false" onAction="#second_btn" text="вывод двух выбранных полей каждого элемента коллекции " />
+      <TextField fx:id="t2" layoutX="126.0" layoutY="59.0" prefHeight="25.0" prefWidth="38.0" />
+      <Button contentDisplay="CENTER" layoutX="174.0" layoutY="93.0" mnemonicParsing="false" onAction="#third_btn" prefHeight="61.0" prefWidth="351.0" text="вывод элементов, у которых значение некого целочисленного поля находится в указанном пользователем диапазоне" wrapText="true" />
+      <TextField fx:id="price1" layoutX="15.0" layoutY="93.0" promptText="цена от" />
+      <TextField fx:id="price2" layoutX="15.0" layoutY="124.0" promptText="цена до" />
+      <Button layoutX="174.0" layoutY="166.0" mnemonicParsing="false" onAction="#fourth_btn" prefHeight="25.0" prefWidth="351.0" text="Имя модельера из Италии, предлагающего самое дорогое" wrapText="true" />
+      <Button layoutX="174.0" layoutY="201.0" mnemonicParsing="false" onAction="#fifth_btn" prefHeight="61.0" prefWidth="351.0" text="Перечень отечественных производителей, упорядоченных по алфавиту, предлагающих хотя бы один вид одежды с ценой, ниже, чем у иностранных производителей" wrapText="true" />
+      <TextField fx:id="t1" layoutX="80.0" layoutY="59.0" prefHeight="25.0" prefWidth="38.0" />
+   </children>
+</AnchorPane>
