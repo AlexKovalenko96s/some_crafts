@@ -16,6 +16,7 @@ public class First implements Bla_bla_bla{
 	
 	@Override
 	public void first() {
+		System.out.println("first start");
 		System.out.println("Enter string(text)");
 		@SuppressWarnings("resource")
 		Scanner scn = new Scanner(System.in);
@@ -39,5 +40,6 @@ public class First implements Bla_bla_bla{
 			fr.close();
 			br.close();
 		} catch (FileNotFoundException e) {} catch (IOException e) {}
+		System.out.println("first finish");
 	}
 }

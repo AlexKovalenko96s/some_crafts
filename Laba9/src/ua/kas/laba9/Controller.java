@@ -16,21 +16,26 @@ public class Controller{
 	Third third = new Third();
 	
 	public void first_btn(ActionEvent e){
+		System.out.println("first");
 		first.first();
 	}
 
 	public void second_btn(ActionEvent e){
+		System.out.println("second");
 		second.first();
 		ta.setText(Second.not_correct);
 	}
 	
 	public void third_btn(ActionEvent e){
+		System.out.println("third");
 		third.first();
 	}
 	
 	public void correct_btn(ActionEvent e){
+		System.out.println("third");
 		second.correct = ta.getText();
 		System.out.println("Admin check you text: "+ second.correct);
 		ta.setText("");
+		System.out.println("second finish");
 	}
 }

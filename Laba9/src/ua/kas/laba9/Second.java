@@ -9,6 +9,7 @@ public class Second implements Bla_bla_bla{
 	
 	@Override
 	public void first() {
+		System.out.println("second start");
 		System.out.println("Enter string(text)");
 		@SuppressWarnings("resource")
 		Scanner scn = new Scanner(System.in);
