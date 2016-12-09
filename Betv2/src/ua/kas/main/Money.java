@@ -1,6 +1,9 @@
 package ua.kas.main;
 
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 public class Money {
@@ -10,34 +13,69 @@ public class Money {
 	private int betId;
 	private int money;
 
-	ArrayList<Integer> bet = new ArrayList<Integer>();
+	// ArrayList<Integer> bet = new ArrayList<Integer>();
+	//
+	// LinkedList<ArrayList<Integer>> event = new
+	// LinkedList<ArrayList<Integer>>();
 
-	LinkedList<ArrayList<Integer>> event = new LinkedList<ArrayList<Integer>>();
+	private LinkedList<Integer> usersList = new LinkedList<Integer>();
+	private LinkedList<Integer> moneyList = new LinkedList<Integer>();
 
 	public void addBet() {
-		bet.add(eventId);
-		bet.add(betId);
-		bet.add(userId);
-		bet.add(money);
+		Connection myConn;
+		try {
+			myConn = DriverManager.getConnection("jdbc:mysql://localhost/bet", "root", "root");
+			java.sql.PreparedStatement myStmt;
+			myStmt = myConn.prepareStatement("insert into enteredBet(userId, eventId, betId, money) values (?,?,?,?)");
+			myStmt.setInt(1, userId);
+			myStmt.setInt(2, eventId);
+			myStmt.setInt(3, betId);
+			myStmt.setInt(4, money);
+			myStmt.executeUpdate();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 
-		event.add(bet);
-		bet.clear();
+		checkBet();
+
+		// bet.add(eventId);
+		// bet.add(betId);
+		// bet.add(userId);
+		// bet.add(money);
+		//
+		// event.add(bet);
+		// bet.clear();
 
 	}
 
-	public void checkBet() {
+	private void checkBet() {
 		// connect with server and check bet
-		for (int i = 0; i < event.size(); i++) {
-			for (int j = 0; j < bet.size(); j++) {
-				if (j == 0) {
-					// check eventId
-				} else if (j == 1) {
-					// check betId
-				} else if (j == 3) {
-					// check userId
-				} else {
-					// check money
-				}
+		Connection myConn;
+		ResultSet myRs = null;
+		try {
+			myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/bet", "root", "root");
+			java.sql.PreparedStatement myStmt;
+			myStmt = myConn.prepareStatement(
+					"select enteredBet.userId, enteredBet.money from enteredBet left join sucsesfulBet on enteredBet.eventId = sucsesfulBet.eventId and enteredBet.betId = sucsesfulBet.betId");
+			myRs = myStmt.executeQuery();
+			while (myRs.next()) {
+				usersList.add(myRs.getInt("enteredBet.userId"));
+				moneyList.add(myRs.getInt("enteredBet.money"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < usersList.size(); i++) {
+			try {
+				myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/bet", "root", "root");
+				java.sql.PreparedStatement ps = myConn
+						.prepareStatement("update usersMoney = (usersMoney + ?) from users where id=?");
+				ps.setInt(1, moneyList.get(i));
+				ps.setInt(2, usersList.get(i));
+				myRs = ps.executeQuery();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 	}

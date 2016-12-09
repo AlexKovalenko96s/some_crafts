@@ -1,5 +1,9 @@
 package ua.kas.main;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
@@ -20,18 +24,24 @@ public class Main {
 		System.out.println("Enter password : ");
 		password = scn.next();
 
-		if (login.equals("1") && password.equals("1")) {
-			System.out.println("Hello, I didn`t see you for a long time.");
+		Connection myConn;
+		try {
+			myConn = DriverManager.getConnection("jdbc:mysql://localhost/bet", "root", "root");
+			java.sql.PreparedStatement myStmt;
+			myStmt = myConn.prepareStatement("select * from users where user_name = ? and password = ? ");
+			myStmt.setString(1, login);
+			myStmt.setString(2, password);
+			ResultSet result = myStmt.executeQuery();
 
-			UserController userController = new UserController();
-			userController.setUserId(666);
-			userController.menu();
-			return;
-		} else {
-			System.err.println("Not correct password or login!");
-			enter();
+			if (result.next()) {
+				System.out.println("Hello, I didn`t see you for a long time.");
+				UserController userController = new UserController();
+				userController.setUserId(result.getInt("id"));
+				userController.menu();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-
 	}
 
 }

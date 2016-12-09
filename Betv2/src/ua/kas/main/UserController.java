@@ -1,8 +1,14 @@
 package ua.kas.main;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class UserController {
+
+	ResultSet myRs;
 
 	private HandlerEvent handler = new HandlerEvent();
 	private EnterBet enterBet = new EnterBet(handler);
@@ -46,6 +52,19 @@ public class UserController {
 		if (select.equals("1")) {
 			System.out.println("Please enter card number: ");
 			select = scn.next();
+
+			Connection myConn;
+			try {
+				myConn = DriverManager.getConnection("jdbc:mysql://localhost/bet", "root", "root");
+				java.sql.PreparedStatement ps = myConn
+						.prepareStatement("update usersMoney = (usersMoney + ?) from users where id=?");
+				ps.setString(1, select);
+				ps.setInt(2, userId);
+				myRs = ps.executeQuery();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
 			System.out.println("Thanks to the money added!");
 			menu();
 		} else if (select.equals("2")) {

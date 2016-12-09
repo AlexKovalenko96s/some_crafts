@@ -1,5 +1,9 @@
 package ua.kas.main;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 public class HandlerEvent {
@@ -11,12 +15,20 @@ public class HandlerEvent {
 	}
 
 	private void addEvent() {
-		// add all events
-		list.add(new Event("LIV", "CHE", 1));
-		list.add(new Event("MUN", "MCI", 2));
-		list.add(new Event("TOT", "WHE", 3));
-		list.add(new Event("BOR", "LES", 4));
-		list.add(new Event("ARS", "STO", 5));
+		Connection myConn;
+		try {
+			myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/bet", "root", "root");
+			ResultSet myRs = null;
+			java.sql.PreparedStatement myStmt;
+			myStmt = myConn.prepareStatement("select * from event");
+			myRs = myStmt.executeQuery();
+
+			while (myRs.next()) {
+				list.add(new Event(myRs.getString("home"), myRs.getString("away"), myRs.getInt("idEvent")));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 	}
 
