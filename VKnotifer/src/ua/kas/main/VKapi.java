@@ -13,6 +13,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 public class VKapi {
@@ -28,6 +30,7 @@ public class VKapi {
 
 	public void setConnection() throws IOException, URISyntaxException {
 		HttpClient httpClient = new DefaultHttpClient();
+		httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
 		// Делаем первый запрос
 		HttpPost post = new HttpPost("http://oauth.vk.com/authorize?" + "client_id=" + client_id + "&scope=" + scope
 				+ "&redirect_uri=" + redirect_uri + "&display=" + display + "&response_type=" + response_type);
@@ -35,7 +38,7 @@ public class VKapi {
 		response = httpClient.execute(post);
 		post.abort();
 		// Получаем редирект
-		System.out.println(response.getFirstHeader("location").getValue());
+		System.out.println(response.toString());
 		String HeaderLocation = response.getFirstHeader("location").getValue();
 		URI RedirectUri = new URI(HeaderLocation);
 		// Для запроса авторизации необходимо два параметра полученных в первом
