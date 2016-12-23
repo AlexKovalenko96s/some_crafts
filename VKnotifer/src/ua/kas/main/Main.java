@@ -31,7 +31,7 @@ public class Main {
 		popup.add(exitItem);
 		SystemTray systemTray = SystemTray.getSystemTray();
 		// получим картинку
-		Image image = Toolkit.getDefaultToolkit().getImage("vk_icon.png");
+		Image image = Toolkit.getDefaultToolkit().getImage("img/vk_icon.png");
 		TrayIcon trayIcon = new TrayIcon(image, "VKNotifer", popup);
 		trayIcon.setImageAutoSize(true);
 		// добавим иконку в трей
@@ -47,6 +47,7 @@ public class Main {
 		String newMessage;
 		int i = 0;
 		for (;;) {
+			System.out.println(oldMessage);
 			// Запросы на сервер можно подавать раз в 3 секунды
 			Thread.sleep(3000); // ждем три секунды
 			if (i == 15000) { // Если прошло 45 000 сек (Время взято с запасом,
