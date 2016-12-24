@@ -41,12 +41,12 @@ public class Main {
 
 		int i = 0;
 		for (;;) {
-			// System.out.println(oldMessage);
+			System.out.println(oldMessage);
 			// Запросы на сервер можно подавать раз в 3 секунды
 			Thread.sleep(3000); // ждем три секунды
 			if (i == 15000) { // Если прошло 45 000 сек (Время взято с запасом,
 								// токен дается на день )
-				access_token = "ce67abddac71efb8a17b8e3aad3b8ce7864e1aee500086de1768f5179cfe02b15a884cbf6594b2a085aad"; // Обновляем
+				access_token = "bda0a59dcac157e7e8697f139be326cb3656d4323491729062dba3062ccbe06e03acc51533c7c449d3791"; // Обновляем
 																														// токен
 				Thread.sleep(3000); // Запросы шлем только раз в три секунды
 				i = 0;

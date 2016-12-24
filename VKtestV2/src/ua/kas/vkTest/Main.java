@@ -1,4 +1,4 @@
-package ua.kas.main;
+package ua.kas.vkTest;
 
 import java.awt.AWTException;
 import java.awt.Image;
@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 
 public class Main {
-
 	public static void main(String[] args)
 			throws IOException, URISyntaxException, AWTException, InterruptedException, NoSuchAlgorithmException {
 		// Создадим раскрывающееся меню
