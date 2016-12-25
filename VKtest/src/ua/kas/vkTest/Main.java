@@ -12,7 +12,7 @@ import org.apache.http.client.ClientProtocolException;
 
 public class Main {
 
-	private static String access_token = "e10f5aa439430959976894ff81bc128fe90df1bdfbbede4b64134b404ffa8cb6183cfc81a457d38db15cb";
+	private static String access_token = "0474deffb23115dd2660cf27656b52b1f149b78cae84e3d0131e6dd5c1363189c3dbda443fdce5bc1e99b";
 
 	public static String getNewMessage()
 			throws ClientProtocolException, IOException, NoSuchAlgorithmException, URISyntaxException {
