@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/x32_jre1.8.0_121"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/fannj-0.6.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/jna-4.1.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
