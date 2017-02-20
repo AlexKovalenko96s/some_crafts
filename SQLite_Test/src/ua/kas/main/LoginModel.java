@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class LoginModel {
 
@@ -39,13 +40,68 @@ public class LoginModel {
 
 			if (resultSet.next())
 				return true;
-			else
+			else {
 				return false;
+			}
 		} catch (Exception e) {
 			return false;
 		} finally {
-			preparedStatement.close();
 			resultSet.close();
+			preparedStatement.close();
+		}
+	}
+
+	public boolean testAdd() throws SQLException {
+		Statement statement = null;
+
+		try {
+			String query = "insert into employee (name, surname, age, username, password) values ('1qw2', '1qw21qw2', 19, '1qw2', '1qw21qw2')";
+			statement = connection.createStatement();
+			statement.execute(query);
+
+			return true;
+		} catch (Exception e) {
+			System.out.println(e);
+
+			return false;
+		} finally {
+			statement.close();
+		}
+	}
+
+	public boolean testDel() throws SQLException {
+		Statement statement = null;
+
+		try {
+			String query = "delete from employee where age = 19";
+			statement = connection.createStatement();
+			statement.execute(query);
+
+			return true;
+		} catch (Exception e) {
+			System.out.println(e);
+
+			return false;
+		} finally {
+			statement.close();
+		}
+	}
+
+	public boolean testUpdate() throws SQLException {
+		Statement statement = null;
+
+		try {
+			String query = "update employee set name = 'noAlex' where age = 19";
+			statement = connection.createStatement();
+			statement.execute(query);
+
+			return true;
+		} catch (Exception e) {
+			System.out.println(e);
+
+			return false;
+		} finally {
+			statement.close();
 		}
 	}
 }

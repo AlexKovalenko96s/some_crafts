@@ -39,4 +39,11 @@ public class MainController implements Initializable {
 			else
 				isConnected.setText("username or password is uncorrect!");
 	}
+
+	public void test(ActionEvent event) throws SQLException {
+		if (loginModel.testUpdate())
+			System.out.println("complete");
+		else
+			System.out.println("error");
+	}
 }
