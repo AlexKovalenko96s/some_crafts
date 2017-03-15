@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
@@ -12,15 +13,18 @@
    <items>
       <AnchorPane prefHeight="398.0" prefWidth="215.0">
          <children>
-            <Label fx:id="l_time" layoutX="14.0" layoutY="14.0" prefHeight="48.0" prefWidth="119.0" text="Time now">
+            <Button layoutX="191.0" layoutY="303.0" mnemonicParsing="false" onAction="#resumeMusic" text="Play" />
+            <Button layoutX="240.0" layoutY="303.0" mnemonicParsing="false" onAction="#pause" text="Pause" />
+            <Button layoutX="133.0" layoutY="303.0" mnemonicParsing="false" onAction="#stop" text="Stop" />
+            <Label fx:id="l_name" layoutX="44.0" layoutY="246.0" prefHeight="25.0" prefWidth="367.0" text="song name" />
+            <Button layoutX="200.0" layoutY="80.0" mnemonicParsing="false" onAction="#start" prefHeight="57.0" prefWidth="128.0" text="Start" />
+            <Label fx:id="l_timerStart" layoutX="14.0" layoutY="14.0" prefHeight="45.0" prefWidth="178.0" text="Label">
                <font>
-                  <Font size="24.0" />
+                  <Font size="29.0" />
                </font>
             </Label>
-            <Button layoutX="191.0" layoutY="303.0" mnemonicParsing="false" text="Play" />
-            <Button layoutX="240.0" layoutY="303.0" mnemonicParsing="false" text="Pause" />
-            <Button layoutX="133.0" layoutY="303.0" mnemonicParsing="false" text="Stop" />
-            <Label fx:id="l_name" layoutX="44.0" layoutY="246.0" prefHeight="25.0" prefWidth="367.0" text="song name" />
+            <TextField fx:id="tf_timeout" layoutX="110.0" layoutY="80.0" prefHeight="25.0" prefWidth="47.0" promptText="min" />
+            <Label layoutX="61.0" layoutY="84.0" text="timeout" />
          </children>
       </AnchorPane>
       <AnchorPane prefHeight="437.0" prefWidth="500.0">
