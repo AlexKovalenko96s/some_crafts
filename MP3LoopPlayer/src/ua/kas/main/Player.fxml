@@ -13,10 +13,10 @@
    <items>
       <AnchorPane prefHeight="398.0" prefWidth="215.0">
          <children>
-            <Button layoutX="191.0" layoutY="303.0" mnemonicParsing="false" onAction="#resumeMusic" text="Play" />
+            <Button layoutX="173.0" layoutY="303.0" mnemonicParsing="false" onAction="#resumeMusic" text="resume" />
             <Button layoutX="240.0" layoutY="303.0" mnemonicParsing="false" onAction="#pause" text="Pause" />
-            <Button layoutX="133.0" layoutY="303.0" mnemonicParsing="false" onAction="#stop" text="Stop" />
-            <Label fx:id="l_name" layoutX="44.0" layoutY="246.0" prefHeight="25.0" prefWidth="367.0" text="song name" />
+            <Button layoutX="344.0" layoutY="80.0" mnemonicParsing="false" onAction="#stop" prefHeight="57.0" prefWidth="56.0" text="Stop" />
+            <Label fx:id="l_name" layoutX="45.0" layoutY="271.0" prefHeight="25.0" prefWidth="367.0" text="song name" />
             <Button layoutX="200.0" layoutY="80.0" mnemonicParsing="false" onAction="#start" prefHeight="57.0" prefWidth="128.0" text="Start" />
             <Label fx:id="l_timerStart" layoutX="14.0" layoutY="14.0" prefHeight="45.0" prefWidth="178.0" text="Label">
                <font>

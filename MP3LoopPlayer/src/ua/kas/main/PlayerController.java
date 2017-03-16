@@ -86,6 +86,8 @@ public class PlayerController implements Initializable {
 
 	private boolean pause = false;
 	private boolean pauseOnMusic = false;
+	private boolean pauseOnClip = false;
+	private boolean nowClip = false;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -96,44 +98,71 @@ public class PlayerController implements Initializable {
 	}
 
 	public void stop() {
-		if (player != null) {
-			player.close();
+		if (player != null || playerForClip != null) {
+			try {
+				player.close();
+			} catch (Exception e) {
+			}
+			try {
+				playerForClip.close();
+			} catch (Exception e) {
+
+			}
+
 			pauseLocation = 0;
 			songTotalLength = 0;
+			countClip = 0;
+
+			pause = false;
+			pauseOnMusic = false;
+			pauseOnClip = false;
+			nowClip = false;
+			timeline.stop();
+
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						l_name.setText("stop");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 	}
 
 	public void pause() {
 		if (!pause) {
-			System.out.println(pause);
-			if (player != null && playerForClip == null) {
+			if (player != null && !nowClip) {
 				try {
+					timeline.pause();
 					pauseLocation = FIS.available();
 					player.close();
-					timeline.pause();
 					pause = true;
 					pauseOnMusic = true;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			} else if (player == null && playerForClip != null) {
-				System.out.println("ddd");
-				try {
-					pauseLocationClip = FIS_Clip.available();
-					playerForClip.close();
-					pause = true;
-					pauseOnMusic = false;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			}
+		} else if (nowClip && pauseOnMusic && !pauseOnClip) {
+			try {
+				pauseLocationClip = FIS_Clip.available();
+				playerForClip.close();
+				pause = true;
+				pauseOnClip = true;
+				pauseOnMusic = true;
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
 	public void resumeMusic() {
+
 		if (pause) {
-			pause = false;
-			if (pauseOnMusic == true) {
+			if (pauseOnMusic && !nowClip) {
+				pause = false;
 				try {
 					FIS = new FileInputStream(fileLocation);
 					BIS = new BufferedInputStream(FIS);
@@ -143,20 +172,10 @@ public class PlayerController implements Initializable {
 				} catch (JavaLayerException | IOException e) {
 					e.printStackTrace();
 				}
-
-				new Thread() {
-					@Override
-					public void run() {
-						try {
-							player.play();
-						} catch (JavaLayerException e) {
-							e.printStackTrace();
-						}
-					}
-				}.start();
-			} else {
-				System.out.println("qqqqqqqqqq");
+				play(fileLocation);
+			} else if (pauseOnClip) {
 				try {
+					pauseOnClip = false;
 					FIS_Clip = new FileInputStream(clipLocation);
 					BIS_Clip = new BufferedInputStream(FIS_Clip);
 					playerForClip = new Player(BIS_Clip);
@@ -165,16 +184,7 @@ public class PlayerController implements Initializable {
 					e.printStackTrace();
 				}
 
-				new Thread() {
-					@Override
-					public void run() {
-						try {
-							playerForClip.play();
-						} catch (JavaLayerException e) {
-							e.printStackTrace();
-						}
-					}
-				}.start();
+				playClip(clipLocation);
 			}
 		}
 	}
@@ -267,6 +277,7 @@ public class PlayerController implements Initializable {
 		timeline.pause();
 		pause();
 		countClip = 0;
+		nowClip = true;
 		playClip(clipPath.get(0));
 	}
 
@@ -275,6 +286,12 @@ public class PlayerController implements Initializable {
 			FIS_Clip = new FileInputStream(path);
 			BIS_Clip = new BufferedInputStream(FIS_Clip);
 			playerForClip = new Player(BIS_Clip);
+			if (pauseLocationClip != 0) {
+				FIS_Clip.skip(songTotalLengthClip - pauseLocationClip);
+			} else {
+				songTotalLengthClip = FIS_Clip.available();
+			}
+			pauseLocationClip = 0;
 			clipLocation = path + "";
 		} catch (JavaLayerException | IOException e) {
 			e.printStackTrace();
@@ -293,11 +310,15 @@ public class PlayerController implements Initializable {
 				if (playerForClip.isComplete()) {
 					if (clipList.size() <= 1) {
 						playerForClip.close();
+						nowClip = false;
+						pause = false;
 						play(fileLocation);
 						timeline.play();
 					} else if (clipList.size() > countClip) {
 						playClip(clipPath.get(countClip));
 					} else {
+						nowClip = false;
+						pause = false;
 						play(fileLocation);
 						timeline.play();
 					}
@@ -360,7 +381,10 @@ public class PlayerController implements Initializable {
 								@Override
 								public void run() {
 									l_name.setText("null");
+									musicList.clear();
+									musicPath.clear();
 									player.close();
+									timeline.stop();
 								}
 							});
 						}
