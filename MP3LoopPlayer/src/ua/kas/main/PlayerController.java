@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -26,6 +27,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -44,6 +46,13 @@ public class PlayerController implements Initializable {
 
 	@FXML
 	TextField tf_timeout;
+	@FXML
+	TextField tf_on;
+	@FXML
+	TextField tf_off;
+
+	@FXML
+	CheckBox cb_autoOnOff;
 
 	@FXML
 	Button bnt_addMusic;
@@ -63,7 +72,8 @@ public class PlayerController implements Initializable {
 	@FXML
 	ListView<String> lv_clip = new ListView<String>();
 
-	private Timeline timeline;
+	// private Timeline timeline;
+	private Timeline timeLineLow;
 
 	private ObservableList<String> musicList = FXCollections.observableArrayList();
 	private ObservableList<String> clipList = FXCollections.observableArrayList();
@@ -122,7 +132,8 @@ public class PlayerController implements Initializable {
 			pauseOnMusic = false;
 			pauseOnClip = false;
 			nowClip = false;
-			timeline.stop();
+			// timeline.stop();
+			timeLineLow.stop();
 
 			Platform.runLater(new Runnable() {
 				@Override
@@ -141,7 +152,8 @@ public class PlayerController implements Initializable {
 		if (!pause) {
 			if (player != null && !nowClip) {
 				try {
-					timeline.pause();
+					// timeline.pause();
+					timeLineLow.pause();
 					pauseLocation = FIS.available();
 					player.close();
 					pause = true;
@@ -164,43 +176,48 @@ public class PlayerController implements Initializable {
 	}
 
 	public void resumeMusic() {
-
-		Info source = Port.Info.SPEAKER;
-		// source = Port.Info.LINE_OUT;
-		// source = Port.Info.HEADPHONE;
-		if (AudioSystem.isLineSupported(source)) {
-			try {
-				Port outline = (Port) AudioSystem.getLine(source);
-				outline.open();
-				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
-				System.out.println("       volume: " + volumeControl.getValue());
-				float v = 0.33F;
-				volumeControl.setValue(v);
-				System.out.println("   new volume: " + volumeControl.getValue());
-				v = 0.73F;
-				volumeControl.setValue(v);
-				System.out.println("newest volume: " + volumeControl.getValue());
-			} catch (LineUnavailableException ex) {
-				System.err.println("source not supported");
-				ex.printStackTrace();
-			}
-		}
-
-		if (pause)
-
-		{
+		if (pause) {
 			if (pauseOnMusic && !nowClip) {
 				pause = false;
+
+				Info source = Port.Info.SPEAKER;
+				if (AudioSystem.isLineSupported(source)) {
+					try {
+						Port outline = (Port) AudioSystem.getLine(source);
+						outline.open();
+						FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
+						System.out.println("       volume: " + volumeControl.getValue());
+						float v = 0.00005F;
+						volumeControl.setValue(v);
+						System.out.println(volumeControl.getValue());
+						new Thread() {
+							@Override
+							public void run() {
+								float v = 0.00005F;
+								while (v <= 1.0f) {
+									v += 0.00005f;
+									volumeControl.setValue(v);
+								}
+							}
+						}.start();
+					} catch (LineUnavailableException ex) {
+						System.err.println("source not supported");
+						ex.printStackTrace();
+					}
+				}
+
 				try {
 					FIS = new FileInputStream(fileLocation);
 					BIS = new BufferedInputStream(FIS);
 					player = new Player(BIS);
 					FIS.skip(songTotalLength - pauseLocation);
-					timeline.play();
+					// timeline.play();
+					timeLineLow.play();
 				} catch (JavaLayerException | IOException e) {
 					e.printStackTrace();
 				}
 				play(fileLocation);
+
 			} else if (pauseOnClip) {
 				try {
 					pauseOnClip = false;
@@ -289,27 +306,132 @@ public class PlayerController implements Initializable {
 	}
 
 	public void start() {
+		Info source = Port.Info.SPEAKER;
+		if (AudioSystem.isLineSupported(source)) {
+			try {
+				Port outline = (Port) AudioSystem.getLine(source);
+				outline.open();
+				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
+				System.out.println("       volume: " + volumeControl.getValue() + "dd");
+				float v = 1F;
+				volumeControl.setValue(v);
+			} catch (LineUnavailableException ex) {
+				System.err.println("source not supported");
+				ex.printStackTrace();
+			}
+		}
+
+		int dif = 0;
+		int difOn = 0;
+
+		if (cb_autoOnOff.isSelected()) {
+			String curStringDate = new SimpleDateFormat("HH.mm.ss").format(System.currentTimeMillis());
+			int h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
+			int m = Integer
+					.parseInt(curStringDate.substring(curStringDate.indexOf(".") + 1, curStringDate.lastIndexOf(".")));
+			int s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
+
+			String on = tf_on.getText();
+			int hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
+			int mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
+
+			String off = tf_off.getText();
+			int hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
+			int mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
+
+			if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60)) {
+				dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s;
+				Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
+				timeline.play();
+			} else {
+				difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s;
+				Timeline timelineOn = new Timeline(new KeyFrame(Duration.seconds(difOn), ae -> run()));
+				timelineOn.play();
+
+				dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn;
+				Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
+				timeline.play();
+			}
+		}
+
+		if (difOn == 0) {
+			run();
+		}
+	}
+
+	public void run() {
 		int timeout = Integer.parseInt(tf_timeout.getText());
 		if (musicList.size() != 0 && clipList.size() != 0 && timeout != 0) {
 			play(musicPath.get(0));
 
-			timeline = new Timeline(new KeyFrame(Duration.seconds(timeout), ae -> playClips()));
-			timeline.setCycleCount(Animation.INDEFINITE);
-			timeline.play();
+			timeLineLow = new Timeline(new KeyFrame(Duration.seconds(timeout - 5), ae -> soundLow()));
+			timeLineLow.setCycleCount(Animation.INDEFINITE);
+			timeLineLow.play();
+
+			// timeline = new Timeline(new KeyFrame(Duration.seconds(timeout),
+			// ae -> playClips()));
+			// timeline.setCycleCount(Animation.INDEFINITE);
+			// timeline.play();
 
 		} else
 			JOptionPane.showMessageDialog(null, "не все выбранно!");
 	}
 
+	public void soundLow() {
+		Info source = Port.Info.SPEAKER;
+		if (AudioSystem.isLineSupported(source)) {
+			try {
+				Port outline = (Port) AudioSystem.getLine(source);
+				outline.open();
+				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
+				System.out.println("       volume: " + volumeControl.getValue());
+				float v = 1.0f;
+				volumeControl.setValue(v);
+				System.out.println(volumeControl.getValue());
+				new Thread() {
+					@Override
+					public void run() {
+						float v = 1.0F;
+						while (v > 0.001F) {
+							v -= 0.000036f;
+							volumeControl.setValue(v);
+						}
+						playClips();
+					}
+				}.start();
+			} catch (LineUnavailableException ex) {
+				System.err.println("source not supported");
+				ex.printStackTrace();
+			}
+		}
+	}
+
 	public void playClips() {
-		timeline.pause();
+		// timeline.pause();
+		timeLineLow.pause();
 		pause();
 		countClip = 0;
 		nowClip = true;
 		playClip(clipPath.get(0));
+
+		Info source = Port.Info.SPEAKER;
+		if (AudioSystem.isLineSupported(source)) {
+			try {
+				Port outline = (Port) AudioSystem.getLine(source);
+				outline.open();
+				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
+				System.out.println("       volume: " + volumeControl.getValue());
+				float v = 1.0F;
+				volumeControl.setValue(v);
+			} catch (LineUnavailableException ex) {
+				System.err.println("source not supported");
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	public void playClip(String path) {
+		System.out.println("dd");
 		try {
 			FIS_Clip = new FileInputStream(path);
 			BIS_Clip = new BufferedInputStream(FIS_Clip);
@@ -341,14 +463,72 @@ public class PlayerController implements Initializable {
 						nowClip = false;
 						pause = false;
 						play(fileLocation);
-						timeline.play();
+
+						Info source = Port.Info.SPEAKER;
+						if (AudioSystem.isLineSupported(source)) {
+							try {
+								Port outline = (Port) AudioSystem.getLine(source);
+								outline.open();
+								FloatControl volumeControl = (FloatControl) outline
+										.getControl(FloatControl.Type.VOLUME);
+								System.out.println("       volume: " + volumeControl.getValue());
+								float v = 0.00005F;
+								volumeControl.setValue(v);
+								System.out.println(volumeControl.getValue());
+								new Thread() {
+									@Override
+									public void run() {
+										float v = 0.00005F;
+										while (v <= 1) {
+											v += 0.00005f;
+											volumeControl.setValue(v);
+										}
+									}
+								}.start();
+							} catch (LineUnavailableException ex) {
+								System.err.println("source not supported");
+								ex.printStackTrace();
+							}
+						}
+
+						// timeline.play();
+						timeLineLow.play();
 					} else if (clipList.size() > countClip) {
 						playClip(clipPath.get(countClip));
 					} else {
 						nowClip = false;
 						pause = false;
 						play(fileLocation);
-						timeline.play();
+
+						Info source = Port.Info.SPEAKER;
+						if (AudioSystem.isLineSupported(source)) {
+							try {
+								Port outline = (Port) AudioSystem.getLine(source);
+								outline.open();
+								FloatControl volumeControl = (FloatControl) outline
+										.getControl(FloatControl.Type.VOLUME);
+								System.out.println("       volume: " + volumeControl.getValue());
+								float v = 0.00005F;
+								volumeControl.setValue(v);
+								System.out.println(volumeControl.getValue());
+								new Thread() {
+									@Override
+									public void run() {
+										float v = 0.00005F;
+										while (v <= 1.0f) {
+											v += 0.00005f;
+											volumeControl.setValue(v);
+										}
+									}
+								}.start();
+							} catch (LineUnavailableException ex) {
+								System.err.println("source not supported");
+								ex.printStackTrace();
+							}
+						}
+
+						// timeline.play();
+						timeLineLow.play();
 					}
 				}
 			}
@@ -412,7 +592,8 @@ public class PlayerController implements Initializable {
 									musicList.clear();
 									musicPath.clear();
 									player.close();
-									timeline.stop();
+									// timeline.stop();
+									timeLineLow.stop();
 								}
 							});
 						}

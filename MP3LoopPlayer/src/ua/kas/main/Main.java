@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -15,7 +16,10 @@ public class Main extends Application {
 			Parent root = FXMLLoader.load(getClass().getResource("Player.fxml"));
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setTitle("Music");
+			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("music.png")));
 			primaryStage.setScene(scene);
+			primaryStage.setResizable(false);
 			primaryStage.show();
 
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
