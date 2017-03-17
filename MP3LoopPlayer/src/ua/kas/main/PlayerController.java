@@ -321,23 +321,23 @@ public class PlayerController implements Initializable {
 			}
 		}
 
-		int dif = 0;
-		int difOn = 0;
+		long dif = 0;
+		long difOn = 0;
 
 		if (cb_autoOnOff.isSelected()) {
 			String curStringDate = new SimpleDateFormat("HH.mm.ss").format(System.currentTimeMillis());
-			int h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
-			int m = Integer
+			long h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
+			long m = Integer
 					.parseInt(curStringDate.substring(curStringDate.indexOf(".") + 1, curStringDate.lastIndexOf(".")));
-			int s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
+			long s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
 
 			String on = tf_on.getText();
-			int hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
-			int mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
+			long hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
+			long mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
 
 			String off = tf_off.getText();
-			int hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
-			int mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
+			long hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
+			long mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
 
 			if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60)) {
 				dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s;
