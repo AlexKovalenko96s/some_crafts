@@ -13,8 +13,8 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("Player.fxml"));
-			Scene scene = new Scene(root);
+			Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
+			Scene scene = new Scene(root, 1080 - 10, 400 - 10);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setTitle("Music");
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("music.png")));

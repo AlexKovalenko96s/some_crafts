@@ -5,47 +5,84 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ua.kas.main.PlayerController">
-   <items>
-      <AnchorPane prefHeight="398.0" prefWidth="215.0">
-         <children>
-            <Button layoutX="165.0" layoutY="303.0" mnemonicParsing="false" onAction="#resumeMusic" text="resume" />
-            <Button layoutX="238.0" layoutY="303.0" mnemonicParsing="false" onAction="#pause" text="Pause" />
-            <Button layoutX="366.0" layoutY="109.0" mnemonicParsing="false" onAction="#stop" prefHeight="57.0" prefWidth="56.0" text="Stop" />
-            <Label fx:id="l_name" alignment="CENTER" layoutX="45.0" layoutY="271.0" prefHeight="25.0" prefWidth="367.0" text="song name" textAlignment="CENTER" />
-            <Button layoutX="229.0" layoutY="109.0" mnemonicParsing="false" onAction="#start" prefHeight="57.0" prefWidth="128.0" text="Start" />
-            <TextField fx:id="tf_timeout" layoutX="169.0" layoutY="109.0" prefHeight="25.0" prefWidth="47.0" promptText="sec" />
-            <Label layoutX="118.0" layoutY="113.0" text="timeout" />
-            <TextField fx:id="tf_on" layoutX="103.0" layoutY="141.0" prefHeight="25.0" prefWidth="55.0" promptText="hh.mm" />
-            <TextField fx:id="tf_off" layoutX="160.0" layoutY="141.0" prefHeight="25.0" prefWidth="56.0" promptText="hh.mm" />
-            <CheckBox fx:id="cb_autoOnOff" layoutX="21.0" layoutY="145.0" mnemonicParsing="false" text="auto on/off" />
-         </children>
-      </AnchorPane>
-      <AnchorPane prefHeight="437.0" prefWidth="500.0">
-         <children>
-            <ScrollPane layoutX="14.0" layoutY="39.0" prefHeight="285.0" prefWidth="202.0" AnchorPane.leftAnchor="15.0">
-               <content>
-                  <ListView fx:id="lv_music" prefHeight="283.0" prefWidth="200.0" />
-               </content>
-            </ScrollPane>
-            <ScrollPane layoutX="244.0" layoutY="39.0" prefHeight="285.0" prefWidth="202.0" AnchorPane.rightAnchor="15.0">
-               <content>
-                  <ListView fx:id="lv_clip" prefHeight="283.0" prefWidth="200.0" />
-               </content>
-            </ScrollPane>
-            <Label layoutX="94.0" layoutY="14.0" text="Музыка" />
-            <Label layoutX="291.0" layoutY="14.0" text="Вставки" />
-            <Button fx:id="bnt_addMusic" layoutX="106.0" layoutY="333.0" mnemonicParsing="false" onAction="#selector" prefHeight="57.0" prefWidth="110.0" text="Добавить" />
-            <Button fx:id="bnt_delMusic" layoutX="14.0" layoutY="333.0" mnemonicParsing="false" onAction="#remove" prefHeight="7.0" prefWidth="85.0" text="Удалить" />
-            <Button fx:id="bnt_clearMusic" layoutX="14.0" layoutY="365.0" mnemonicParsing="false" onAction="#clear" prefHeight="7.0" prefWidth="85.0" text="Очистить" />
-            <Button fx:id="bnt_addClip" layoutX="312.0" layoutY="333.0" mnemonicParsing="false" onAction="#selector" prefHeight="57.0" prefWidth="110.0" text="Добавить" />
-            <Button fx:id="bnt_delClip" layoutX="222.0" layoutY="333.0" mnemonicParsing="false" onAction="#remove" prefHeight="7.0" prefWidth="85.0" text="Удалить" />
-            <Button fx:id="bnt_clearClips" layoutX="222.0" layoutY="365.0" mnemonicParsing="false" onAction="#clear" prefHeight="7.0" prefWidth="85.0" text="Очистить" />
-         </children>
-      </AnchorPane>
-   </items>
-</SplitPane>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <SplitPane dividerPositions="0.21799628942486085, 0.6057513914656771" layoutX="304.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1080.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <items>
+            <AnchorPane prefHeight="398.0" prefWidth="256.0">
+               <children>
+                  <ScrollPane layoutX="15.0" layoutY="57.0" prefHeight="285.0" prefWidth="202.0" AnchorPane.topAnchor="39.0">
+                     <content>
+                        <ListView fx:id="lv_music" prefHeight="283.0" prefWidth="200.0" />
+                     </content>
+                  </ScrollPane>
+                  <ListView fx:id="lv_music" layoutX="15.0" layoutY="57.0" prefHeight="283.0" prefWidth="200.0" AnchorPane.topAnchor="39.0" />
+                  <Label layoutX="95.0" layoutY="14.0" text="Музыка" />
+                  <Button fx:id="bnt_delMusic" layoutX="15.0" layoutY="331.0" mnemonicParsing="false" onAction="#remove" prefHeight="7.0" prefWidth="85.0" text="Удалить" />
+                  <Button fx:id="bnt_clearMusic" layoutX="15.0" layoutY="360.0" mnemonicParsing="false" onAction="#clear" prefHeight="7.0" prefWidth="85.0" text="Очистить" />
+                  <Button fx:id="bnt_addMusic" layoutX="107.0" layoutY="331.0" mnemonicParsing="false" onAction="#selector" prefHeight="57.0" prefWidth="110.0" text="Добавить" />
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="398.0" prefWidth="300.0">
+               <children>
+                  <Button layoutX="294.0" layoutY="359.0" mnemonicParsing="false" onAction="#resumeMusic" text="resume" />
+                  <Button layoutX="354.0" layoutY="359.0" mnemonicParsing="false" onAction="#pause" text="Pause" />
+                  <Button layoutX="116.0" layoutY="177.0" mnemonicParsing="false" onAction="#stop" prefHeight="31.0" prefWidth="85.0" text="Stop" />
+                  <Label fx:id="l_name" alignment="CENTER" layoutX="14.0" layoutY="359.0" prefHeight="25.0" prefWidth="275.0" text="song name" textAlignment="CENTER" />
+                  <Button layoutX="221.0" layoutY="177.0" mnemonicParsing="false" onAction="#start" prefHeight="31.0" prefWidth="128.0" text="Start" />
+                  <TextField fx:id="tf_timeout" layoutX="266.0" layoutY="85.0" prefHeight="25.0" prefWidth="47.0" promptText="sec" />
+                  <Label layoutX="59.0" layoutY="89.0" text="Время повтора для первой вставки:" />
+                  <TextField fx:id="tf_on" layoutX="230.0" layoutY="141.0" prefHeight="25.0" prefWidth="55.0" promptText="hh.mm" />
+                  <TextField fx:id="tf_off" layoutX="294.0" layoutY="141.0" prefHeight="25.0" prefWidth="56.0" promptText="hh.mm" />
+                  <CheckBox fx:id="cb_autoOnOff" layoutX="60.0" layoutY="145.0" mnemonicParsing="false" text="автоматичкое вкл/выкл" />
+                  <Label alignment="CENTER" layoutX="51.0" layoutY="14.0" prefHeight="57.0" prefWidth="310.0" text="MusicPlayer" textAlignment="CENTER">
+                     <font>
+                        <Font size="36.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="60.0" layoutY="115.0" text="Время повтора для второй вставки:" />
+                  <TextField fx:id="tf_timeout1" layoutX="266.0" layoutY="111.0" prefHeight="25.0" prefWidth="47.0" promptText="sec" />
+                  <Separator layoutY="346.0" prefHeight="3.0" prefWidth="412.0" />
+                  <Button layoutX="5.0" layoutY="246.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="195.0" text="Загрузить &quot;Музыка&quot;" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="250.0" />
+                  <Button layoutX="5.0" layoutY="282.0" mnemonicParsing="false" prefWidth="195.0" text="Загрузить &quot;Вставкой №1&quot;" AnchorPane.leftAnchor="5.0" />
+                  <Button layoutX="5.0" layoutY="314.0" mnemonicParsing="false" prefWidth="195.0" text="Загрузить &quot;Вставкой №2&quot;" />
+                  <Button layoutX="212.0" layoutY="250.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="195.0" text="Сохранить &quot;Музыка&quot;" />
+                  <Button layoutX="212.0" layoutY="282.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="195.0" text="Сохранить &quot;Вставка №1&quot;" />
+                  <Button layoutX="212.0" layoutY="314.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="195.0" text="Сохранить &quot;Вставка №2&quot;" />
+                  <Separator layoutX="1.0" layoutY="215.0" prefHeight="3.0" prefWidth="412.0" />
+                  <Label layoutX="177.0" layoutY="225.0" text="Плейлисты:" />
+               </children>
+            </AnchorPane>
+            <AnchorPane prefHeight="437.0" prefWidth="500.0">
+               <children>
+                  <ScrollPane layoutX="5.0" layoutY="35.0" prefHeight="285.0" prefWidth="202.0" AnchorPane.rightAnchor="215.0" AnchorPane.topAnchor="35.0">
+                     <content>
+                        <ListView fx:id="lv_clip" prefHeight="283.0" prefWidth="200.0" />
+                     </content>
+                  </ScrollPane>
+                  <Label layoutX="73.0" layoutY="6.0" text="Вставка №1" />
+                  <Button fx:id="bnt_addClip" layoutX="100.0" layoutY="327.0" mnemonicParsing="false" onAction="#selector" prefHeight="57.0" prefWidth="110.0" text="Добавить" />
+                  <Button fx:id="bnt_delClip" layoutX="5.0" layoutY="330.0" mnemonicParsing="false" onAction="#remove" prefHeight="7.0" prefWidth="85.0" text="Удалить" />
+                  <Button fx:id="bnt_clearClips" layoutX="5.0" layoutY="359.0" mnemonicParsing="false" onAction="#clear" prefHeight="7.0" prefWidth="85.0" text="Очистить" />
+                  <Button fx:id="bnt_addClip1" layoutX="306.0" layoutY="327.0" mnemonicParsing="false" onAction="#selector" prefHeight="57.0" prefWidth="110.0" text="Добавить" />
+                  <Button fx:id="bnt_delClip1" layoutX="216.0" layoutY="359.0" mnemonicParsing="false" onAction="#remove" prefHeight="7.0" prefWidth="85.0" text="Удалить" />
+                  <Button fx:id="bnt_clearClips1" layoutX="216.0" layoutY="330.0" mnemonicParsing="false" onAction="#clear" prefHeight="7.0" prefWidth="85.0" text="Очистить" />
+                  <Label layoutX="273.0" layoutY="6.0" text="Вставка №2" />
+                  <ScrollPane layoutX="216.0" layoutY="35.0" prefHeight="285.0" prefWidth="202.0">
+                     <content>
+                        <ListView fx:id="lv_clip1" prefHeight="283.0" prefWidth="200.0" />
+                     </content>
+                  </ScrollPane>
+               </children>
+            </AnchorPane>
+         </items>
+      </SplitPane>
+   </children>
+</AnchorPane>

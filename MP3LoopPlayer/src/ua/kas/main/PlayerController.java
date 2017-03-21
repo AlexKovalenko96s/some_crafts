@@ -3,12 +3,14 @@ package ua.kas.main;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.FloatControl;
@@ -41,11 +43,11 @@ public class PlayerController implements Initializable {
 
 	@FXML
 	Label l_name;
-	@FXML
-	Label l_timerStart;
 
 	@FXML
 	TextField tf_timeout;
+	@FXML
+	TextField tf_timeoutSecond;
 	@FXML
 	TextField tf_on;
 	@FXML
@@ -55,31 +57,53 @@ public class PlayerController implements Initializable {
 	CheckBox cb_autoOnOff;
 
 	@FXML
+	Button bnt_loadMusic;
+	@FXML
+	Button bnt_loadClip;
+	@FXML
+	Button bnt_loadClipSecond;
+	@FXML
+	Button bnt_saveMusic;
+	@FXML
+	Button bnt_saveClip;
+	@FXML
+	Button bnt_saveClipSecond;
+	@FXML
 	Button bnt_addMusic;
 	@FXML
 	Button bnt_addClip;
+	@FXML
+	Button bnt_addClipSecond;
 	@FXML
 	Button bnt_delMusic;
 	@FXML
 	Button bnt_delClip;
 	@FXML
+	Button bnt_delClipSecond;
+	@FXML
 	Button bnt_clearMusic;
 	@FXML
 	Button bnt_clearClips;
+	@FXML
+	Button bnt_clearClipsSecond;
 
 	@FXML
 	ListView<String> lv_music = new ListView<String>();
 	@FXML
 	ListView<String> lv_clip = new ListView<String>();
+	@FXML
+	ListView<String> lv_clipSecond = new ListView<String>();
 
 	// private Timeline timeline;
 	private Timeline timeLineLow;
 
 	private ObservableList<String> musicList = FXCollections.observableArrayList();
 	private ObservableList<String> clipList = FXCollections.observableArrayList();
+	private ObservableList<String> clipListSecond = FXCollections.observableArrayList();
 
 	private ArrayList<String> musicPath = new ArrayList<>();
 	private ArrayList<String> clipPath = new ArrayList<>();
+	private ArrayList<String> clipPathSecond = new ArrayList<>();
 
 	private FileInputStream FIS;
 	private BufferedInputStream BIS;
@@ -98,6 +122,7 @@ public class PlayerController implements Initializable {
 	private String clipLocation;
 
 	private int countClip = 0;
+	private int countMusic = 0;
 
 	private boolean pause = false;
 	private boolean pauseOnMusic = false;
@@ -127,6 +152,7 @@ public class PlayerController implements Initializable {
 			pauseLocation = 0;
 			songTotalLength = 0;
 			countClip = 0;
+			countMusic = 0;
 
 			pause = false;
 			pauseOnMusic = false;
@@ -236,11 +262,17 @@ public class PlayerController implements Initializable {
 
 	public void clear(ActionEvent event) {
 		if (event.getSource() == bnt_clearMusic) {
+			musicPath.clear();
 			musicList.clear();
 			lv_music.setItems(musicList);
-		} else {
+		} else if (event.getSource() == bnt_clearClips) {
+			clipPath.clear();
 			clipList.clear();
 			lv_clip.setItems(clipList);
+		} else if (event.getSource() == bnt_clearClipsSecond) {
+			clipListSecond.clear();
+			clipListSecond.clear();
+			lv_clipSecond.setItems(clipListSecond);
 		}
 	}
 
@@ -262,7 +294,7 @@ public class PlayerController implements Initializable {
 				musicPath.remove((int) index.get(i));
 			}
 			lv_music.setItems(musicList);
-		} else {
+		} else if (event.getSource() == bnt_delClip) {
 			select = lv_clip.getSelectionModel().getSelectedItems();
 			for (int i = 0; i < clipList.size(); i++) {
 				for (int j = 0; j < select.size(); j++) {
@@ -277,6 +309,21 @@ public class PlayerController implements Initializable {
 				clipPath.remove((int) index.get(i));
 			}
 			lv_clip.setItems(clipList);
+		} else if (event.getSource() == bnt_delClipSecond) {
+			select = lv_clipSecond.getSelectionModel().getSelectedItems();
+			for (int i = 0; i < clipListSecond.size(); i++) {
+				for (int j = 0; j < select.size(); j++) {
+					if (clipListSecond.get(i).equals(select.get(j))) {
+						index.add(i);
+					}
+				}
+			}
+
+			for (int i = index.size() - 1; i >= 0; i--) {
+				clipListSecond.remove((int) index.get(i));
+				clipPathSecond.remove((int) index.get(i));
+			}
+			lv_clipSecond.setItems(clipListSecond);
 		}
 	}
 
@@ -295,12 +342,18 @@ public class PlayerController implements Initializable {
 					musicPath.add(file.getAbsolutePath());
 				}
 				lv_music.setItems(musicList);
-			} else {
+			} else if (event.getSource() == bnt_addClip) {
 				for (File file : list) {
 					clipList.add(file.getName());
 					clipPath.add(file.getAbsolutePath());
 				}
 				lv_clip.setItems(clipList);
+			} else if (event.getSource() == bnt_addClipSecond) {
+				for (File file : list) {
+					clipListSecond.add(file.getName());
+					clipPathSecond.add(file.getAbsolutePath());
+				}
+				lv_clipSecond.setItems(clipListSecond);
 			}
 		}
 	}
@@ -431,7 +484,6 @@ public class PlayerController implements Initializable {
 	}
 
 	public void playClip(String path) {
-		System.out.println("dd");
 		try {
 			FIS_Clip = new FileInputStream(path);
 			BIS_Clip = new BufferedInputStream(FIS_Clip);
@@ -559,7 +611,7 @@ public class PlayerController implements Initializable {
 						@Override
 						public void run() {
 							try {
-								l_name.setText(musicList.get(0));
+								l_name.setText(musicList.get(countMusic));
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -569,19 +621,13 @@ public class PlayerController implements Initializable {
 					player.play();
 
 					if (player.isComplete()) {
-						if (musicList.size() > 1) {
-							play(musicPath.get(1));
-
+						countMusic++;
+						if (musicList.size() < countMusic) {
+							play(musicPath.get(countMusic));
 							Platform.runLater(new Runnable() {
 								@Override
 								public void run() {
-									musicList.remove(0);
-									musicPath.remove(0);
-									try {
-										l_name.setText(musicList.get(1));
-									} catch (Exception e) {
-										l_name.setText(musicList.get(0));
-									}
+									l_name.setText(musicList.get(countMusic));
 								}
 							});
 						} else {
@@ -589,8 +635,6 @@ public class PlayerController implements Initializable {
 								@Override
 								public void run() {
 									l_name.setText("null");
-									musicList.clear();
-									musicPath.clear();
 									player.close();
 									// timeline.stop();
 									timeLineLow.stop();
@@ -603,5 +647,97 @@ public class PlayerController implements Initializable {
 				}
 			}
 		}.start();
+	}
+
+	public void save(ActionEvent e) {
+
+		FileChooser fileChooser = new FileChooser();
+
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+		fileChooser.getExtensionFilters().add(extFilter);
+
+		File file = fileChooser.showSaveDialog(null);
+		try {
+			FileWriter fileWriter;
+			fileWriter = new FileWriter(new File(file.getAbsolutePath()));
+
+			if (e.getSource() == bnt_saveMusic) {
+				for (int i = 0; i < musicPath.size(); i++) {
+					fileWriter.write(musicPath.get(i));
+					fileWriter.append(System.lineSeparator());
+				}
+			} else if (e.getSource() == bnt_saveClip) {
+				for (int i = 0; i < clipPath.size(); i++) {
+					fileWriter.write(clipPath.get(i));
+					fileWriter.append(System.lineSeparator());
+				}
+			} else if (e.getSource() == bnt_saveClipSecond) {
+				for (int i = 0; i < clipPathSecond.size(); i++) {
+					fileWriter.write(clipPathSecond.get(i));
+					fileWriter.append(System.lineSeparator());
+				}
+			}
+			fileWriter.flush();
+			fileWriter.close();
+
+		} catch (Exception ex) {
+		}
+	}
+
+	public void load(ActionEvent e) {
+		FileChooser fileChooser = new FileChooser();
+
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT (*.txt)", "*.txt");
+		fileChooser.getExtensionFilters().add(extFilter);
+
+		File file = fileChooser.showOpenDialog(null);
+		Scanner scn = null;
+		try {
+			if (e.getSource() == bnt_loadMusic) {
+				musicList.clear();
+				musicPath.clear();
+
+				scn = new Scanner(new File(file.getAbsolutePath()));
+
+				while (scn.hasNextLine())
+					musicPath.add(scn.nextLine());
+
+				for (int i = 0; i < musicPath.size(); i++) {
+					musicList.add(new File(musicPath.get(i)).getName());
+				}
+
+				lv_music.setItems(musicList);
+			} else if (e.getSource() == bnt_loadClip) {
+				clipList.clear();
+				clipPath.clear();
+
+				scn = new Scanner(new File(file.getAbsolutePath()));
+
+				while (scn.hasNextLine())
+					clipPath.add(scn.nextLine());
+
+				for (int i = 0; i < clipPath.size(); i++) {
+					clipList.add(new File(clipPath.get(i)).getName());
+				}
+
+				lv_clip.setItems(clipList);
+			} else if (e.getSource() == bnt_loadClipSecond) {
+				clipListSecond.clear();
+				clipPathSecond.clear();
+
+				scn = new Scanner(new File(file.getAbsolutePath()));
+				while (scn.hasNextLine())
+					clipPathSecond.add(scn.nextLine());
+
+				for (int i = 0; i < clipPathSecond.size(); i++) {
+					clipListSecond.add(new File(clipPathSecond.get(i)).getName());
+				}
+
+				lv_clipSecond.setItems(clipListSecond);
+			}
+		} catch (Exception ex) {
+		} finally {
+			scn.close();
+		}
 	}
 }
