@@ -168,19 +168,34 @@
             <Font name="Times New Roman" size="12.0" />
          </font>
       </Button>
-      <Label layoutX="94.0" layoutY="16.0" text="Музыка">
+      <Label layoutX="39.0" layoutY="16.0" text="Музыка">
          <font>
             <Font name="Times New Roman Bold" size="16.0" />
          </font>
       </Label>
-      <Label layoutX="685.0" layoutY="16.0" text="Вставка №1">
+      <Label layoutX="637.0" layoutY="16.0" text="Вставка №1">
          <font>
             <Font name="Times New Roman Bold" size="16.0" />
          </font>
       </Label>
-      <Label layoutX="915.0" layoutY="16.0" text="Вставка №2">
+      <Label layoutX="874.0" layoutY="16.0" text="Вставка №2">
          <font>
             <Font name="Times New Roman Bold" size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="l_clipTime" alignment="BOTTOM_RIGHT" layoutX="751.0" layoutY="17.0" prefHeight="17.0" prefWidth="88.0" text="0:0:0" textAlignment="RIGHT">
+         <font>
+            <Font name="Times New Roman" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="l_musicTime" alignment="BOTTOM_RIGHT" layoutX="153.0" layoutY="17.0" prefHeight="17.0" prefWidth="88.0" text="0:0:0" textAlignment="RIGHT">
+         <font>
+            <Font name="Times New Roman" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="l_clipSecondTime" alignment="BOTTOM_RIGHT" layoutX="985.0" layoutY="17.0" prefHeight="17.0" prefWidth="88.0" text="0:0:0" textAlignment="RIGHT">
+         <font>
+            <Font name="Times New Roman" size="12.0" />
          </font>
       </Label>
    </children>

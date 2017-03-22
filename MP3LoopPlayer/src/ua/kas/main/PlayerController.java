@@ -19,6 +19,9 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Port;
 import javax.swing.JOptionPane;
 
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -43,6 +46,12 @@ public class PlayerController implements Initializable {
 
 	@FXML
 	Label l_name;
+	@FXML
+	Label l_musicTime;
+	@FXML
+	Label l_clipTime;
+	@FXML
+	Label l_clipSecondTime;
 
 	@FXML
 	TextField tf_timeout;
@@ -96,6 +105,7 @@ public class PlayerController implements Initializable {
 
 	// private Timeline timeline;
 	private Timeline timeLineLow;
+	private Timeline timeLineLowSecond;
 
 	private ObservableList<String> musicList = FXCollections.observableArrayList();
 	private ObservableList<String> clipList = FXCollections.observableArrayList();
@@ -109,25 +119,38 @@ public class PlayerController implements Initializable {
 	private BufferedInputStream BIS;
 	private FileInputStream FIS_Clip;
 	private BufferedInputStream BIS_Clip;
+	private FileInputStream FIS_ClipSecond;
+	private BufferedInputStream BIS_ClipSecond;
 
 	private Player player;
 	private Player playerForClip;
+	private Player playerForClipSecond;
 
 	private long pauseLocation = 0;
 	private long pauseLocationClip = 0;
 	private long songTotalLength = 0;
 	private long songTotalLengthClip = 0;
+	private long pauseLocationClipSecond = 0;
+	private long songTotalLengthClipSecond = 0;
+	private long musicLenght = 0;
+	private long clipLenght = 0;
+	private long clipSecondLenght = 0;
 
 	private String fileLocation;
 	private String clipLocation;
+	private String clipSecondLocation;
 
 	private int countClip = 0;
 	private int countMusic = 0;
+	private int countClipSecond = 0;
+	private int timeoutSecond = 0;
 
 	private boolean pause = false;
 	private boolean pauseOnMusic = false;
 	private boolean pauseOnClip = false;
+	private boolean pauseOnClipSecond = false;
 	private boolean nowClip = false;
+	private boolean nowClipSecond = false;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -161,6 +184,11 @@ public class PlayerController implements Initializable {
 			// timeline.stop();
 			timeLineLow.stop();
 
+			try {
+				timeLineLowSecond.stop();
+			} catch (Exception e) {
+			}
+
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
@@ -180,6 +208,10 @@ public class PlayerController implements Initializable {
 				try {
 					// timeline.pause();
 					timeLineLow.pause();
+					try {
+						timeLineLowSecond.pause();
+					} catch (Exception e) {
+					}
 					pauseLocation = FIS.available();
 					player.close();
 					pause = true;
@@ -212,10 +244,8 @@ public class PlayerController implements Initializable {
 						Port outline = (Port) AudioSystem.getLine(source);
 						outline.open();
 						FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
-						System.out.println("       volume: " + volumeControl.getValue());
 						float v = 0.00005F;
 						volumeControl.setValue(v);
-						System.out.println(volumeControl.getValue());
 						new Thread() {
 							@Override
 							public void run() {
@@ -239,6 +269,10 @@ public class PlayerController implements Initializable {
 					FIS.skip(songTotalLength - pauseLocation);
 					// timeline.play();
 					timeLineLow.play();
+					try {
+						timeLineLowSecond.play();
+					} catch (Exception e) {
+					}
 				} catch (JavaLayerException | IOException e) {
 					e.printStackTrace();
 				}
@@ -264,16 +298,31 @@ public class PlayerController implements Initializable {
 		if (event.getSource() == bnt_clearMusic) {
 			musicPath.clear();
 			musicList.clear();
+			musicLenght = 0;
 			lv_music.setItems(musicList);
 		} else if (event.getSource() == bnt_clearClips) {
 			clipPath.clear();
 			clipList.clear();
+			clipLenght = 0;
 			lv_clip.setItems(clipList);
 		} else if (event.getSource() == bnt_clearClipsSecond) {
 			clipListSecond.clear();
 			clipListSecond.clear();
+			clipSecondLenght = 0;
 			lv_clipSecond.setItems(clipListSecond);
 		}
+
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				l_musicTime.setText(Long.toString(musicLenght / 3600) + ":" + Long.toString((musicLenght / 60) % 60)
+						+ ":" + Long.toString(musicLenght % 60));
+				l_clipTime.setText(Long.toString(clipLenght / 3600) + ":" + Long.toString((clipLenght / 60) % 60) + ":"
+						+ Long.toString(clipLenght % 60));
+				l_clipSecondTime.setText(Long.toString(clipSecondLenght / 3600) + ":"
+						+ Long.toString((clipSecondLenght / 60) % 60) + ":" + Long.toString(clipSecondLenght % 60));
+			}
+		});
 	}
 
 	public void remove(ActionEvent event) {
@@ -325,6 +374,18 @@ public class PlayerController implements Initializable {
 			}
 			lv_clipSecond.setItems(clipListSecond);
 		}
+
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				l_musicTime.setText(Long.toString(musicLenght / 3600) + ":" + Long.toString((musicLenght / 60) % 60)
+						+ ":" + Long.toString(musicLenght % 60));
+				l_clipTime.setText(Long.toString(clipLenght / 3600) + ":" + Long.toString((clipLenght / 60) % 60) + ":"
+						+ Long.toString(clipLenght % 60));
+				l_clipSecondTime.setText(Long.toString(clipSecondLenght / 3600) + ":"
+						+ Long.toString((clipSecondLenght / 60) % 60) + ":" + Long.toString(clipSecondLenght % 60));
+			}
+		});
 	}
 
 	public void selector(ActionEvent event) throws IOException {
@@ -340,21 +401,60 @@ public class PlayerController implements Initializable {
 				for (File file : list) {
 					musicList.add(file.getName());
 					musicPath.add(file.getAbsolutePath());
+
+					int duration = 0;
+					try {
+						AudioFile audioFile = AudioFileIO.read(file);
+						duration = audioFile.getAudioHeader().getTrackLength();
+						musicLenght += duration;
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 				lv_music.setItems(musicList);
 			} else if (event.getSource() == bnt_addClip) {
 				for (File file : list) {
 					clipList.add(file.getName());
 					clipPath.add(file.getAbsolutePath());
+
+					int duration = 0;
+					try {
+						AudioFile audioFile = AudioFileIO.read(file);
+						duration = audioFile.getAudioHeader().getTrackLength();
+						clipLenght += duration;
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 				lv_clip.setItems(clipList);
 			} else if (event.getSource() == bnt_addClipSecond) {
 				for (File file : list) {
 					clipListSecond.add(file.getName());
 					clipPathSecond.add(file.getAbsolutePath());
+
+					int duration = 0;
+					try {
+						AudioFile audioFile = AudioFileIO.read(file);
+						duration = audioFile.getAudioHeader().getTrackLength();
+						clipSecondLenght += duration;
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 				lv_clipSecond.setItems(clipListSecond);
 			}
+
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					l_musicTime.setText(Long.toString(musicLenght / 3600) + ":" + Long.toString((musicLenght / 60) % 60)
+							+ ":" + Long.toString(musicLenght % 60));
+					l_clipTime.setText(Long.toString(clipLenght / 3600) + ":" + Long.toString((clipLenght / 60) % 60)
+							+ ":" + Long.toString(clipLenght % 60));
+					l_clipSecondTime.setText(Long.toString(clipSecondLenght / 3600) + ":"
+							+ Long.toString((clipSecondLenght / 60) % 60) + ":" + Long.toString(clipSecondLenght % 60));
+				}
+			});
 		}
 	}
 
@@ -365,7 +465,6 @@ public class PlayerController implements Initializable {
 				Port outline = (Port) AudioSystem.getLine(source);
 				outline.open();
 				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
-				System.out.println("       volume: " + volumeControl.getValue() + "dd");
 				float v = 1F;
 				volumeControl.setValue(v);
 			} catch (LineUnavailableException ex) {
@@ -417,7 +516,7 @@ public class PlayerController implements Initializable {
 		if (musicList.size() != 0 && clipList.size() != 0 && timeout != 0) {
 			play(musicPath.get(0));
 
-			timeLineLow = new Timeline(new KeyFrame(Duration.seconds(timeout - 5), ae -> soundLow()));
+			timeLineLow = new Timeline(new KeyFrame(Duration.seconds(timeout - 5), ae -> soundLow(true)));
 			timeLineLow.setCycleCount(Animation.INDEFINITE);
 			timeLineLow.play();
 
@@ -426,21 +525,32 @@ public class PlayerController implements Initializable {
 			// timeline.setCycleCount(Animation.INDEFINITE);
 			// timeline.play();
 
+			try {
+				timeoutSecond = Integer.parseInt(tf_timeoutSecond.getText());
+
+				if (timeoutSecond != 0 && clipPathSecond.size() != 0) {
+					timeLineLowSecond = new Timeline(
+							new KeyFrame(Duration.seconds(timeoutSecond - 5), ae -> soundLow(false)));
+					timeLineLowSecond.play();
+				} else {
+					JOptionPane.showMessageDialog(null, "Выберите аудио-дорожки для 'Вставки №2'!");
+				}
+			} catch (Exception e) {
+			}
+
 		} else
 			JOptionPane.showMessageDialog(null, "не все выбранно!");
 	}
 
-	public void soundLow() {
+	public void soundLow(boolean clip) {
 		Info source = Port.Info.SPEAKER;
 		if (AudioSystem.isLineSupported(source)) {
 			try {
 				Port outline = (Port) AudioSystem.getLine(source);
 				outline.open();
 				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
-				System.out.println("       volume: " + volumeControl.getValue());
 				float v = 1.0f;
 				volumeControl.setValue(v);
-				System.out.println(volumeControl.getValue());
 				new Thread() {
 					@Override
 					public void run() {
@@ -449,7 +559,10 @@ public class PlayerController implements Initializable {
 							v -= 0.000036f;
 							volumeControl.setValue(v);
 						}
-						playClips();
+						if (clip)
+							playClips();
+						else
+							playClipsSecond();
 					}
 				}.start();
 			} catch (LineUnavailableException ex) {
@@ -473,7 +586,29 @@ public class PlayerController implements Initializable {
 				Port outline = (Port) AudioSystem.getLine(source);
 				outline.open();
 				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
-				System.out.println("       volume: " + volumeControl.getValue());
+				float v = 1.0F;
+				volumeControl.setValue(v);
+			} catch (LineUnavailableException ex) {
+				System.err.println("source not supported");
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	public void playClipsSecond() {
+		// timeline.pause();
+		timeLineLow.pause();
+		pause();
+		countClipSecond = 0;
+		nowClipSecond = true;
+		playClipSecond(clipPathSecond.get(0));
+
+		Info source = Port.Info.SPEAKER;
+		if (AudioSystem.isLineSupported(source)) {
+			try {
+				Port outline = (Port) AudioSystem.getLine(source);
+				outline.open();
+				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
 				float v = 1.0F;
 				volumeControl.setValue(v);
 			} catch (LineUnavailableException ex) {
@@ -523,10 +658,8 @@ public class PlayerController implements Initializable {
 								outline.open();
 								FloatControl volumeControl = (FloatControl) outline
 										.getControl(FloatControl.Type.VOLUME);
-								System.out.println("       volume: " + volumeControl.getValue());
 								float v = 0.00005F;
 								volumeControl.setValue(v);
-								System.out.println(volumeControl.getValue());
 								new Thread() {
 									@Override
 									public void run() {
@@ -559,10 +692,8 @@ public class PlayerController implements Initializable {
 								outline.open();
 								FloatControl volumeControl = (FloatControl) outline
 										.getControl(FloatControl.Type.VOLUME);
-								System.out.println("       volume: " + volumeControl.getValue());
 								float v = 0.00005F;
 								volumeControl.setValue(v);
-								System.out.println(volumeControl.getValue());
 								new Thread() {
 									@Override
 									public void run() {
@@ -573,7 +704,120 @@ public class PlayerController implements Initializable {
 										}
 									}
 								}.start();
+							} catch (
+
+							LineUnavailableException ex) {
+								System.err.println("source not supported");
+								ex.printStackTrace();
+							}
+						}
+
+						// timeline.play();
+						timeLineLow.play();
+
+						try {
+							if (timeoutSecond != 0 && clipPathSecond.size() != 0) {
+								timeLineLowSecond = new Timeline(
+										new KeyFrame(Duration.seconds(timeoutSecond - 5), ae -> soundLow(false)));
+								timeLineLowSecond.play();
+							}
+						} catch (Exception e) {
+						}
+					}
+				}
+			}
+		}.start();
+	}
+
+	public void playClipSecond(String path) {
+		try {
+			FIS_ClipSecond = new FileInputStream(path);
+			BIS_ClipSecond = new BufferedInputStream(FIS_ClipSecond);
+			playerForClipSecond = new Player(BIS_ClipSecond);
+			if (pauseLocationClipSecond != 0) {
+				FIS_ClipSecond.skip(songTotalLengthClipSecond - pauseLocationClipSecond);
+			} else {
+				songTotalLengthClipSecond = FIS_ClipSecond.available();
+			}
+			pauseLocationClipSecond = 0;
+			clipSecondLocation = path + "";
+		} catch (JavaLayerException | IOException e) {
+			e.printStackTrace();
+		}
+
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					playerForClipSecond.play();
+					countClipSecond++;
+				} catch (JavaLayerException e) {
+					e.printStackTrace();
+				}
+
+				if (playerForClipSecond.isComplete()) {
+					if (clipListSecond.size() <= 1) {
+						playerForClipSecond.close();
+						nowClipSecond = false;
+						pause = false;
+						play(fileLocation);
+
+						Info source = Port.Info.SPEAKER;
+						if (AudioSystem.isLineSupported(source)) {
+							try {
+								Port outline = (Port) AudioSystem.getLine(source);
+								outline.open();
+								FloatControl volumeControl = (FloatControl) outline
+										.getControl(FloatControl.Type.VOLUME);
+								float v = 0.00005F;
+								volumeControl.setValue(v);
+								new Thread() {
+									@Override
+									public void run() {
+										float v = 0.00005F;
+										while (v <= 1) {
+											v += 0.00005f;
+											volumeControl.setValue(v);
+										}
+									}
+								}.start();
 							} catch (LineUnavailableException ex) {
+								System.err.println("source not supported");
+								ex.printStackTrace();
+							}
+						}
+
+						// timeline.play();
+						timeLineLow.play();
+					} else if (clipListSecond.size() > countClipSecond) {
+						playClip(clipPathSecond.get(countClipSecond));
+					} else {
+						nowClipSecond = false;
+						pause = false;
+						play(fileLocation);
+
+						Info source = Port.Info.SPEAKER;
+						if (AudioSystem.isLineSupported(source)) {
+							try {
+								Port outline = (Port) AudioSystem.getLine(source);
+								outline.open();
+								FloatControl volumeControl = (FloatControl) outline
+										.getControl(FloatControl.Type.VOLUME);
+								float v = 0.00005F;
+								volumeControl.setValue(v);
+								new Thread() {
+									@Override
+									public void run() {
+										float v = 0.00005F;
+										while (v <= 1.0f) {
+											v += 0.00005f;
+											volumeControl.setValue(v);
+										}
+									}
+								}.start();
+							} catch (
+
+							LineUnavailableException ex) {
 								System.err.println("source not supported");
 								ex.printStackTrace();
 							}
@@ -622,7 +866,7 @@ public class PlayerController implements Initializable {
 
 					if (player.isComplete()) {
 						countMusic++;
-						if (musicList.size() < countMusic) {
+						if (musicList.size() > countMusic) {
 							play(musicPath.get(countMusic));
 							Platform.runLater(new Runnable() {
 								@Override
@@ -634,6 +878,7 @@ public class PlayerController implements Initializable {
 							Platform.runLater(new Runnable() {
 								@Override
 								public void run() {
+									countMusic = 0;
 									l_name.setText("null");
 									player.close();
 									// timeline.stop();
@@ -691,6 +936,7 @@ public class PlayerController implements Initializable {
 		fileChooser.getExtensionFilters().add(extFilter);
 
 		File file = fileChooser.showOpenDialog(null);
+		musicLenght = 0;
 		Scanner scn = null;
 		try {
 			if (e.getSource() == bnt_loadMusic) {
@@ -704,6 +950,15 @@ public class PlayerController implements Initializable {
 
 				for (int i = 0; i < musicPath.size(); i++) {
 					musicList.add(new File(musicPath.get(i)).getName());
+
+					int duration = 0;
+					try {
+						AudioFile audioFile = AudioFileIO.read(new File(musicPath.get(i)));
+						duration = audioFile.getAudioHeader().getTrackLength();
+						musicLenght += duration;
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 
 				lv_music.setItems(musicList);
@@ -718,6 +973,15 @@ public class PlayerController implements Initializable {
 
 				for (int i = 0; i < clipPath.size(); i++) {
 					clipList.add(new File(clipPath.get(i)).getName());
+
+					int duration = 0;
+					try {
+						AudioFile audioFile = AudioFileIO.read(new File(clipPath.get(i)));
+						duration = audioFile.getAudioHeader().getTrackLength();
+						clipLenght += duration;
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 
 				lv_clip.setItems(clipList);
@@ -731,10 +995,31 @@ public class PlayerController implements Initializable {
 
 				for (int i = 0; i < clipPathSecond.size(); i++) {
 					clipListSecond.add(new File(clipPathSecond.get(i)).getName());
+
+					int duration = 0;
+					try {
+						AudioFile audioFile = AudioFileIO.read(new File(clipPathSecond.get(i)));
+						duration = audioFile.getAudioHeader().getTrackLength();
+						clipSecondLenght += duration;
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
 				}
 
 				lv_clipSecond.setItems(clipListSecond);
 			}
+
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					l_musicTime.setText(Long.toString(musicLenght / 3600) + ":" + Long.toString((musicLenght / 60) % 60)
+							+ ":" + Long.toString(musicLenght % 60));
+					l_clipTime.setText(Long.toString(clipLenght / 3600) + ":" + Long.toString((clipLenght / 60) % 60)
+							+ ":" + Long.toString(clipLenght % 60));
+					l_clipSecondTime.setText(Long.toString(clipSecondLenght / 3600) + ":"
+							+ Long.toString((clipSecondLenght / 60) % 60) + ":" + Long.toString(clipSecondLenght % 60));
+				}
+			});
 		} catch (Exception ex) {
 		} finally {
 			scn.close();
