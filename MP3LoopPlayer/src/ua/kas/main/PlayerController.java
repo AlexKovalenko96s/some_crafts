@@ -220,12 +220,24 @@ public class PlayerController implements Initializable {
 					e.printStackTrace();
 				}
 			}
-		} else if (nowClip && pauseOnMusic && !pauseOnClip) {
+		} else if (nowClip && pauseOnMusic && !pauseOnClip && !nowClipSecond) {
 			try {
 				pauseLocationClip = FIS_Clip.available();
 				playerForClip.close();
 				pause = true;
 				pauseOnClip = true;
+				pauseOnClipSecond = false;
+				pauseOnMusic = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if (nowClipSecond && pauseOnMusic && !pauseOnClip && !nowClip) {
+			try {
+				pauseLocationClipSecond = FIS_ClipSecond.available();
+				playerForClipSecond.close();
+				pause = true;
+				pauseOnClip = false;
+				pauseOnClipSecond = true;
 				pauseOnMusic = true;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -714,15 +726,6 @@ public class PlayerController implements Initializable {
 
 						// timeline.play();
 						timeLineLow.play();
-
-						try {
-							if (timeoutSecond != 0 && clipPathSecond.size() != 0) {
-								timeLineLowSecond = new Timeline(
-										new KeyFrame(Duration.seconds(timeoutSecond - 5), ae -> soundLow(false)));
-								timeLineLowSecond.play();
-							}
-						} catch (Exception e) {
-						}
 					}
 				}
 			}
@@ -760,6 +763,7 @@ public class PlayerController implements Initializable {
 						playerForClipSecond.close();
 						nowClipSecond = false;
 						pause = false;
+						timeLineLowSecond.stop();
 						play(fileLocation);
 
 						Info source = Port.Info.SPEAKER;
@@ -794,6 +798,7 @@ public class PlayerController implements Initializable {
 					} else {
 						nowClipSecond = false;
 						pause = false;
+						timeLineLowSecond.stop();
 						play(fileLocation);
 
 						Info source = Port.Info.SPEAKER;
@@ -863,6 +868,15 @@ public class PlayerController implements Initializable {
 					});
 
 					player.play();
+					try {
+						if (timeoutSecond != 0 && clipPathSecond.size() != 0) {
+							timeLineLowSecond = new Timeline(
+									new KeyFrame(Duration.seconds(timeoutSecond - 5), ae -> soundLow(false)));
+							timeLineLowSecond.play();
+							System.out.println("ddd");
+						}
+					} catch (Exception e) {
+					}
 
 					if (player.isComplete()) {
 						countMusic++;
