@@ -22,7 +22,6 @@ import javax.swing.JOptionPane;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -50,6 +49,8 @@ public class Controller implements Initializable {
 	Label l_musicTime;
 	@FXML
 	Label l_clipTime;
+	@FXML
+	Label l_clipName;
 
 	@FXML
 	TextField tf_timeout;
@@ -81,6 +82,14 @@ public class Controller implements Initializable {
 	Button bnt_clearMusic;
 	@FXML
 	Button bnt_clearClips;
+	@FXML
+	Button bnt_upMusic;
+	@FXML
+	Button bnt_upClip;
+	@FXML
+	Button bnt_downMusic;
+	@FXML
+	Button bnt_downClip;
 
 	@FXML
 	ListView<String> lv_music = new ListView<String>();
@@ -121,6 +130,7 @@ public class Controller implements Initializable {
 	private boolean pauseOnMusic = false;
 	private boolean pauseOnClip = false;
 	private boolean nowClip = false;
+	private boolean autoOn = false;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -165,6 +175,10 @@ public class Controller implements Initializable {
 				}
 			});
 		}
+		if (autoOn) {
+			start();
+			autoOn = false;
+		}
 	}
 
 	public void pause() {
@@ -204,10 +218,8 @@ public class Controller implements Initializable {
 						Port outline = (Port) AudioSystem.getLine(source);
 						outline.open();
 						FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
-						System.out.println("       volume: " + volumeControl.getValue());
 						float v = 0.00005F;
 						volumeControl.setValue(v);
-						System.out.println(volumeControl.getValue());
 						new Thread() {
 							@Override
 							public void run() {
@@ -261,6 +273,7 @@ public class Controller implements Initializable {
 		} else if (event.getSource() == bnt_clearClips) {
 			clipList.clear();
 			clipPath.clear();
+			clipLenghtList.clear();
 			clipLenght = 0;
 			lv_clip.setItems(clipList);
 		}
@@ -345,6 +358,7 @@ public class Controller implements Initializable {
 				}
 				clipList.remove((int) index.get(i));
 				clipPath.remove((int) index.get(i));
+				clipLenghtList.remove((int) index.get(i));
 			}
 
 			lv_clip.setItems(clipList);
@@ -441,6 +455,7 @@ public class Controller implements Initializable {
 
 					clipList.add(h + ":" + m + ":" + s + " " + file.getName());
 					clipPath.add(file.getAbsolutePath());
+					clipLenghtList.add(" ");
 				}
 
 				lv_clip.setItems(clipList);
@@ -480,68 +495,82 @@ public class Controller implements Initializable {
 	}
 
 	public void start() {
-		Info source = Port.Info.SPEAKER;
-		if (AudioSystem.isLineSupported(source)) {
-			try {
-				Port outline = (Port) AudioSystem.getLine(source);
-				outline.open();
-				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
-				float v = 1F;
-				volumeControl.setValue(v);
-			} catch (LineUnavailableException ex) {
-				System.err.println("source not supported");
-				ex.printStackTrace();
+		if (!clipLenghtList.contains(" ")) {
+			Info source = Port.Info.SPEAKER;
+			if (AudioSystem.isLineSupported(source)) {
+				try {
+					Port outline = (Port) AudioSystem.getLine(source);
+					outline.open();
+					FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
+					float v = 1F;
+					volumeControl.setValue(v);
+				} catch (LineUnavailableException ex) {
+					System.err.println("source not supported");
+					ex.printStackTrace();
+				}
 			}
-		}
 
-		long dif = 0;
-		long difOn = 0;
+			long dif = 0;
+			long difOn = 0;
 
-		if (cb_autoOnOff.isSelected()) {
-			String curStringDate = new SimpleDateFormat("HH.mm.ss").format(System.currentTimeMillis());
-			long h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
-			long m = Integer
-					.parseInt(curStringDate.substring(curStringDate.indexOf(".") + 1, curStringDate.lastIndexOf(".")));
-			long s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
+			if (cb_autoOnOff.isSelected()) {
+				String curStringDate = new SimpleDateFormat("HH.mm.ss").format(System.currentTimeMillis());
+				long h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
+				long m = Integer.parseInt(
+						curStringDate.substring(curStringDate.indexOf(".") + 1, curStringDate.lastIndexOf(".")));
+				long s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
 
-			String on = tf_on.getText();
-			long hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
-			long mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
+				String on = tf_on.getText();
+				long hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
+				long mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
 
-			String off = tf_off.getText();
-			long hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
-			long mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
+				String off = tf_off.getText();
+				long hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
+				long mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
 
-			if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60)) {
-				dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s;
-				Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
-				timeline.play();
-			} else {
-				difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s;
-				Timeline timelineOn = new Timeline(new KeyFrame(Duration.seconds(difOn), ae -> run()));
-				timelineOn.play();
+				if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60) && !autoOn) {
+					autoOn = true;
+					dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s;
+					Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
+					timeline.play();
+				} else {
+					autoOn = true;
+					difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s;
+					if (difOn < 0) {
+						difOn = (24 * 3600) - difOn;
+					}
+					Timeline timelineOn = new Timeline(new KeyFrame(Duration.seconds(difOn), ae -> run()));
+					timelineOn.play();
 
-				dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn;
-				Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
-				timeline.play();
+					dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn;
+					Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
+					timeline.play();
+				}
 			}
-		}
 
-		if (difOn == 0) {
-			run();
+			if (difOn == 0) {
+				run();
+			}
+		} else {
+			ArrayList<Integer> index = new ArrayList<>();
+			for (int i = 0; i < clipLenghtList.size(); i++) {
+				if (clipLenghtList.get(i).equals(" ")) {
+					index.add(i + 1);
+				}
+			}
+			JOptionPane.showMessageDialog(null, "Timeout для клипов " + index + " не заполнены!");
 		}
 	}
 
 	public void run() {
-		int timeout = Integer.parseInt(tf_timeout.getText());
-		if (musicList.size() != 0 && clipList.size() != 0 && timeout != 0) {
+		if (musicList.size() != 0 && clipList.size() != 0) {
 			play(musicPath.get(countMusic));
 
-			timeLineLow = new Timeline(new KeyFrame(Duration.seconds(timeout - 5), ae -> soundLow()));
-			timeLineLow.setCycleCount(Animation.INDEFINITE);
+			timeLineLow = new Timeline(new KeyFrame(
+					Duration.seconds(Integer.parseInt(clipLenghtList.get(countClip)) - 5), ae -> soundLow()));
 			timeLineLow.play();
 		} else
-			JOptionPane.showMessageDialog(null, "не все выбранно!");
+			JOptionPane.showMessageDialog(null, "Hе все выбранно!");
 	}
 
 	public void soundLow() {
@@ -551,10 +580,8 @@ public class Controller implements Initializable {
 				Port outline = (Port) AudioSystem.getLine(source);
 				outline.open();
 				FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
-				System.out.println("       volume: " + volumeControl.getValue());
 				float v = 1.0f;
 				volumeControl.setValue(v);
-				System.out.println(volumeControl.getValue());
 				new Thread() {
 					@Override
 					public void run() {
@@ -576,7 +603,6 @@ public class Controller implements Initializable {
 	public void playClips() {
 		timeLineLow.pause();
 		pause();
-		countClip = 0;
 		nowClip = true;
 		playClip(clipPath.get(countClip));
 
@@ -655,6 +681,8 @@ public class Controller implements Initializable {
 							ex.printStackTrace();
 						}
 					}
+					timeLineLow = new Timeline(new KeyFrame(
+							Duration.seconds(Integer.parseInt(clipLenghtList.get(countClip)) - 5), ae -> soundLow()));
 					timeLineLow.play();
 				}
 			}
@@ -800,6 +828,7 @@ public class Controller implements Initializable {
 				clipLenght = 0;
 				clipList.clear();
 				clipPath.clear();
+				clipLenghtList.clear();
 
 				scn = new Scanner(new File(file.getAbsolutePath()));
 
@@ -828,6 +857,7 @@ public class Controller implements Initializable {
 						s = "0" + s;
 
 					clipList.add(h + ":" + m + ":" + s + " " + new File(clipPath.get(i)).getName());
+					clipLenghtList.add(" ");
 				}
 
 				lv_clip.setItems(clipList);
@@ -866,6 +896,49 @@ public class Controller implements Initializable {
 		} catch (Exception ex) {
 		} finally {
 			scn.close();
+		}
+	}
+
+	public void setTimeout() {
+		ObservableList<String> select;
+		ArrayList<Integer> index = new ArrayList<>();
+		select = lv_clip.getSelectionModel().getSelectedItems();
+		if (select.size() != 0) {
+			for (int i = 0; i < clipList.size(); i++) {
+				for (int j = 0; j < select.size(); j++) {
+					if (clipList.get(i).equals(select.get(j))) {
+						index.add(i);
+					}
+				}
+			}
+
+			for (int i = index.size() - 1; i >= 0; i--) {
+				clipLenghtList.set(index.get(i), tf_timeout.getText());
+			}
+			tf_timeout.setText(" ");
+		}
+	}
+
+	public void up(ActionEvent e) {
+		ObservableList<String> select;
+		ArrayList<Integer> index = new ArrayList<>();
+
+		if (e.getSource() == bnt_upMusic) {
+			select = lv_music.getSelectionModel().getSelectedItems();
+
+		} else if (e.getSource() == bnt_upClip) {
+			select = lv_clip.getSelectionModel().getSelectedItems();
+		}
+	}
+
+	public void down(ActionEvent e) {
+		ObservableList<String> select;
+		ArrayList<Integer> index = new ArrayList<>();
+
+		if (e.getSource() == bnt_downMusic) {
+			select = lv_music.getSelectionModel().getSelectedItems();
+		} else if (e.getSource() == bnt_downClip) {
+			select = lv_clip.getSelectionModel().getSelectedItems();
 		}
 	}
 }
