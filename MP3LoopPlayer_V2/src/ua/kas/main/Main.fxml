@@ -166,22 +166,22 @@
             <Font name="Times New Roman" size="14.0" />
          </font>
       </Button>
-      <Button fx:id="bnt_delMusic1" layoutX="7.0" layoutY="335.0" mnemonicParsing="false" onAction="#remove" prefHeight="22.0" prefWidth="60.0" text="Up">
+      <Button fx:id="bnt_upMusic" layoutX="7.0" layoutY="335.0" mnemonicParsing="false" onAction="#up" prefHeight="22.0" prefWidth="60.0" text="Up">
          <font>
             <Font name="Times New Roman" size="12.0" />
          </font>
       </Button>
-      <Button fx:id="bnt_delMusic11" layoutX="7.0" layoutY="362.0" mnemonicParsing="false" onAction="#remove" prefHeight="22.0" prefWidth="60.0" text="Down">
+      <Button fx:id="bnt_downMusic" layoutX="7.0" layoutY="362.0" mnemonicParsing="false" onAction="#down" prefHeight="22.0" prefWidth="60.0" text="Down">
          <font>
             <Font name="Times New Roman" size="12.0" />
          </font>
       </Button>
-      <Button fx:id="bnt_delMusic12" layoutX="684.0" layoutY="335.0" mnemonicParsing="false" onAction="#remove" prefHeight="22.0" prefWidth="60.0" text="Up">
+      <Button fx:id="bnt_upClip" layoutX="684.0" layoutY="335.0" mnemonicParsing="false" onAction="#up" prefHeight="22.0" prefWidth="60.0" text="Up">
          <font>
             <Font name="Times New Roman" size="12.0" />
          </font>
       </Button>
-      <Button fx:id="bnt_delMusic111" layoutX="684.0" layoutY="362.0" mnemonicParsing="false" onAction="#remove" prefHeight="22.0" prefWidth="60.0" text="Down">
+      <Button fx:id="bnt_downClip" layoutX="684.0" layoutY="362.0" mnemonicParsing="false" onAction="#down" prefHeight="22.0" prefWidth="60.0" text="Down">
          <font>
             <Font name="Times New Roman" size="12.0" />
          </font>

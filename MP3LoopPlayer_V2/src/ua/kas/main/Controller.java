@@ -455,7 +455,7 @@ public class Controller implements Initializable {
 
 					clipList.add(h + ":" + m + ":" + s + " " + file.getName());
 					clipPath.add(file.getAbsolutePath());
-					clipLenghtList.add(" ");
+					clipLenghtList.add("");
 				}
 
 				lv_clip.setItems(clipList);
@@ -495,70 +495,74 @@ public class Controller implements Initializable {
 	}
 
 	public void start() {
-		if (!clipLenghtList.contains(" ")) {
-			Info source = Port.Info.SPEAKER;
-			if (AudioSystem.isLineSupported(source)) {
-				try {
-					Port outline = (Port) AudioSystem.getLine(source);
-					outline.open();
-					FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
-					float v = 1F;
-					volumeControl.setValue(v);
-				} catch (LineUnavailableException ex) {
-					System.err.println("source not supported");
-					ex.printStackTrace();
-				}
-			}
-
-			long dif = 0;
-			long difOn = 0;
-
-			if (cb_autoOnOff.isSelected()) {
-				String curStringDate = new SimpleDateFormat("HH.mm.ss").format(System.currentTimeMillis());
-				long h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
-				long m = Integer.parseInt(
-						curStringDate.substring(curStringDate.indexOf(".") + 1, curStringDate.lastIndexOf(".")));
-				long s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
-
-				String on = tf_on.getText();
-				long hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
-				long mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
-
-				String off = tf_off.getText();
-				long hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
-				long mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
-
-				if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60) && !autoOn) {
-					autoOn = true;
-					dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s;
-					Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
-					timeline.play();
-				} else {
-					autoOn = true;
-					difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s;
-					if (difOn < 0) {
-						difOn = (24 * 3600) - difOn;
+		if (musicList.size() != 0 && clipList.size() != 0) {
+			if (!clipLenghtList.contains("")) {
+				Info source = Port.Info.SPEAKER;
+				if (AudioSystem.isLineSupported(source)) {
+					try {
+						Port outline = (Port) AudioSystem.getLine(source);
+						outline.open();
+						FloatControl volumeControl = (FloatControl) outline.getControl(FloatControl.Type.VOLUME);
+						float v = 1F;
+						volumeControl.setValue(v);
+					} catch (LineUnavailableException ex) {
+						System.err.println("source not supported");
+						ex.printStackTrace();
 					}
-					Timeline timelineOn = new Timeline(new KeyFrame(Duration.seconds(difOn), ae -> run()));
-					timelineOn.play();
-
-					dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn;
-					Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
-					timeline.play();
 				}
-			}
 
-			if (difOn == 0) {
-				run();
-			}
-		} else {
-			ArrayList<Integer> index = new ArrayList<>();
-			for (int i = 0; i < clipLenghtList.size(); i++) {
-				if (clipLenghtList.get(i).equals(" ")) {
-					index.add(i + 1);
+				long dif = 0;
+				long difOn = 0;
+
+				if (cb_autoOnOff.isSelected()) {
+					String curStringDate = new SimpleDateFormat("HH.mm.ss").format(System.currentTimeMillis());
+					long h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
+					long m = Integer.parseInt(
+							curStringDate.substring(curStringDate.indexOf(".") + 1, curStringDate.lastIndexOf(".")));
+					long s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
+
+					String on = tf_on.getText();
+					long hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
+					long mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
+
+					String off = tf_off.getText();
+					long hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
+					long mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
+
+					if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60) && !autoOn) {
+						autoOn = true;
+						dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s;
+						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
+						timeline.play();
+					} else {
+						autoOn = true;
+						difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s;
+						if (difOn < 0) {
+							difOn = (24 * 3600) - difOn;
+						}
+						Timeline timelineOn = new Timeline(new KeyFrame(Duration.seconds(difOn), ae -> run()));
+						timelineOn.play();
+
+						dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn;
+						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
+						timeline.play();
+					}
 				}
+
+				System.out.println(difOn + " " + dif);
+
+				if (difOn == 0 && !cb_autoOnOff.isSelected()) {
+					run();
+				}
+			} else {
+				ArrayList<Integer> index = new ArrayList<>();
+				for (int i = 0; i < clipLenghtList.size(); i++) {
+					if (clipLenghtList.get(i).equals("")) {
+						index.add(i + 1);
+					}
+				}
+				JOptionPane.showMessageDialog(null, "Timeout для клипов " + index + " не заполнены!");
 			}
-			JOptionPane.showMessageDialog(null, "Timeout для клипов " + index + " не заполнены!");
 		}
 	}
 
@@ -787,7 +791,7 @@ public class Controller implements Initializable {
 		fileChooser.getExtensionFilters().add(extFilter);
 
 		File file = fileChooser.showOpenDialog(null);
-		Scanner scn = null;
+		Scanner scn = new Scanner(System.in);
 		try {
 			if (e.getSource() == bnt_loadMusic) {
 				musicLenght = 0;
@@ -795,6 +799,7 @@ public class Controller implements Initializable {
 				musicPath.clear();
 
 				scn = new Scanner(new File(file.getAbsolutePath()));
+				System.out.println(scn.nextLine());
 
 				while (scn.hasNextLine())
 					musicPath.add(scn.nextLine());
@@ -857,7 +862,7 @@ public class Controller implements Initializable {
 						s = "0" + s;
 
 					clipList.add(h + ":" + m + ":" + s + " " + new File(clipPath.get(i)).getName());
-					clipLenghtList.add(" ");
+					clipLenghtList.add("");
 				}
 
 				lv_clip.setItems(clipList);
@@ -913,9 +918,9 @@ public class Controller implements Initializable {
 			}
 
 			for (int i = index.size() - 1; i >= 0; i--) {
-				clipLenghtList.set(index.get(i), tf_timeout.getText());
+				clipLenghtList.set(index.get(i), Integer.toString(Integer.parseInt(tf_timeout.getText()) * 60));
 			}
-			tf_timeout.setText(" ");
+			tf_timeout.setText("");
 		}
 	}
 
@@ -925,9 +930,68 @@ public class Controller implements Initializable {
 
 		if (e.getSource() == bnt_upMusic) {
 			select = lv_music.getSelectionModel().getSelectedItems();
+			if (select.size() != 0) {
+				for (int i = 0; i < musicList.size(); i++) {
+					for (int j = 0; j < select.size(); j++) {
+						if (musicList.get(i).equals(select.get(j))) {
+							index.add(i);
+						}
+					}
+				}
+			}
+
+			String temp = "";
+			String tempPath = "";
+
+			for (int i = 0; i < index.size(); i++) {
+				try {
+					temp = musicList.get(index.get(i) - 1);
+					tempPath = musicPath.get(index.get(i) - 1);
+
+					musicList.set(index.get(i) - 1, musicList.get(index.get(i)));
+					musicList.set(index.get(i), temp);
+					musicPath.set(index.get(i) - 1, musicPath.get(index.get(i)));
+					musicPath.set(index.get(i), tempPath);
+				} catch (Exception ex) {
+				}
+			}
+
+			lv_music.setItems(musicList);
 
 		} else if (e.getSource() == bnt_upClip) {
 			select = lv_clip.getSelectionModel().getSelectedItems();
+			if (select.size() != 0) {
+				for (int i = 0; i < clipList.size(); i++) {
+					for (int j = 0; j < select.size(); j++) {
+						if (clipList.get(i).equals(select.get(j))) {
+							index.add(i);
+						}
+					}
+				}
+			}
+
+			String temp = "";
+			String tempPath = "";
+			String tempLenght = "";
+
+			for (int i = 0; i < index.size(); i++) {
+				try {
+					temp = clipList.get(index.get(i) - 1);
+					tempPath = clipPath.get(index.get(i) - 1);
+					tempLenght = clipLenghtList.get(index.get(i) - 1);
+
+					clipList.set(index.get(i) - 1, clipList.get(index.get(i)));
+					clipList.set(index.get(i), temp);
+					clipPath.set(index.get(i) - 1, clipPath.get(index.get(i)));
+					clipPath.set(index.get(i), tempPath);
+					clipLenghtList.set(index.get(i) - 1, clipLenghtList.get(index.get(i)));
+					clipLenghtList.set(index.get(i), tempLenght);
+				} catch (Exception ex) {
+				}
+			}
+
+			lv_clip.setItems(clipList);
+
 		}
 	}
 
@@ -937,8 +1001,67 @@ public class Controller implements Initializable {
 
 		if (e.getSource() == bnt_downMusic) {
 			select = lv_music.getSelectionModel().getSelectedItems();
+			if (select.size() != 0) {
+				for (int i = 0; i < musicList.size(); i++) {
+					for (int j = 0; j < select.size(); j++) {
+						if (musicList.get(i).equals(select.get(j))) {
+							index.add(i);
+						}
+					}
+				}
+			}
+
+			String temp = "";
+			String tempPath = "";
+
+			for (int i = index.size() - 1; i >= 0; i--) {
+				try {
+					temp = musicList.get(index.get(i) + 1);
+					tempPath = musicPath.get(index.get(i) + 1);
+
+					musicList.set(index.get(i) + 1, musicList.get(index.get(i)));
+					musicList.set(index.get(i), temp);
+					musicPath.set(index.get(i) + 1, musicPath.get(index.get(i)));
+					musicPath.set(index.get(i), tempPath);
+				} catch (Exception ex) {
+				}
+			}
+
+			lv_music.setItems(musicList);
 		} else if (e.getSource() == bnt_downClip) {
 			select = lv_clip.getSelectionModel().getSelectedItems();
+			if (select.size() != 0) {
+				for (int i = 0; i < clipList.size(); i++) {
+					for (int j = 0; j < select.size(); j++) {
+						if (clipList.get(i).equals(select.get(j))) {
+							index.add(i);
+						}
+					}
+				}
+			}
+
+			String temp = "";
+			String tempPath = "";
+			String tempLenght = "";
+
+			for (int i = index.size() - 1; i >= 0; i--) {
+				try {
+					temp = clipList.get(index.get(i) + 1);
+					tempPath = clipPath.get(index.get(i) + 1);
+					tempLenght = clipLenghtList.get(index.get(i) + 1);
+
+					clipList.set(index.get(i) + 1, clipList.get(index.get(i)));
+					clipList.set(index.get(i), temp);
+					clipPath.set(index.get(i) + 1, clipPath.get(index.get(i)));
+					clipPath.set(index.get(i), tempPath);
+					clipLenghtList.set(index.get(i) + 1, clipLenghtList.get(index.get(i)));
+					clipLenghtList.set(index.get(i), tempLenght);
+				} catch (Exception ex) {
+				}
+			}
+
+			lv_clip.setItems(clipList);
+
 		}
 	}
 }
