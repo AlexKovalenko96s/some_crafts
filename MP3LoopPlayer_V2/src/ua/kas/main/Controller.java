@@ -1061,7 +1061,6 @@ public class Controller implements Initializable {
 			}
 
 			lv_clip.setItems(clipList);
-
 		}
 	}
 }
