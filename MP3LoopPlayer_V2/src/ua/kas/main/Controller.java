@@ -398,7 +398,8 @@ public class Controller implements Initializable {
 	public void selector(ActionEvent event) throws IOException {
 		FileChooser fileChooser = new FileChooser();
 
-		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MP3 Files", "*.mp3", "*.mpeg3");
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MP3 Files", "*.mp3", "*.mpeg3",
+				"*.wma", "*.wav");
 		fileChooser.getExtensionFilters().add(extFilter);
 
 		List<File> list = fileChooser.showOpenMultipleDialog(null);
@@ -799,7 +800,6 @@ public class Controller implements Initializable {
 				musicPath.clear();
 
 				scn = new Scanner(new File(file.getAbsolutePath()));
-				System.out.println(scn.nextLine());
 
 				while (scn.hasNextLine())
 					musicPath.add(scn.nextLine());
@@ -943,6 +943,8 @@ public class Controller implements Initializable {
 			String temp = "";
 			String tempPath = "";
 
+			lv_music.getSelectionModel().select(null);
+
 			for (int i = 0; i < index.size(); i++) {
 				try {
 					temp = musicList.get(index.get(i) - 1);
@@ -952,6 +954,8 @@ public class Controller implements Initializable {
 					musicList.set(index.get(i), temp);
 					musicPath.set(index.get(i) - 1, musicPath.get(index.get(i)));
 					musicPath.set(index.get(i), tempPath);
+
+					lv_music.getSelectionModel().select(index.get(i) - 1);
 				} catch (Exception ex) {
 				}
 			}
@@ -974,6 +978,8 @@ public class Controller implements Initializable {
 			String tempPath = "";
 			String tempLenght = "";
 
+			lv_clip.getSelectionModel().select(null);
+
 			for (int i = 0; i < index.size(); i++) {
 				try {
 					temp = clipList.get(index.get(i) - 1);
@@ -986,6 +992,8 @@ public class Controller implements Initializable {
 					clipPath.set(index.get(i), tempPath);
 					clipLenghtList.set(index.get(i) - 1, clipLenghtList.get(index.get(i)));
 					clipLenghtList.set(index.get(i), tempLenght);
+
+					lv_clip.getSelectionModel().select(index.get(i) - 1);
 				} catch (Exception ex) {
 				}
 			}
@@ -1014,6 +1022,8 @@ public class Controller implements Initializable {
 			String temp = "";
 			String tempPath = "";
 
+			lv_music.getSelectionModel().select(null);
+
 			for (int i = index.size() - 1; i >= 0; i--) {
 				try {
 					temp = musicList.get(index.get(i) + 1);
@@ -1023,6 +1033,8 @@ public class Controller implements Initializable {
 					musicList.set(index.get(i), temp);
 					musicPath.set(index.get(i) + 1, musicPath.get(index.get(i)));
 					musicPath.set(index.get(i), tempPath);
+
+					lv_music.getSelectionModel().select(index.get(i) + 1);
 				} catch (Exception ex) {
 				}
 			}
@@ -1044,6 +1056,8 @@ public class Controller implements Initializable {
 			String tempPath = "";
 			String tempLenght = "";
 
+			lv_clip.getSelectionModel().select(null);
+
 			for (int i = index.size() - 1; i >= 0; i--) {
 				try {
 					temp = clipList.get(index.get(i) + 1);
@@ -1056,6 +1070,8 @@ public class Controller implements Initializable {
 					clipPath.set(index.get(i), tempPath);
 					clipLenghtList.set(index.get(i) + 1, clipLenghtList.get(index.get(i)));
 					clipLenghtList.set(index.get(i), tempLenght);
+
+					lv_clip.getSelectionModel().select(index.get(i) + 1);
 				} catch (Exception ex) {
 				}
 			}
