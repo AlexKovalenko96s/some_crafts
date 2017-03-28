@@ -398,8 +398,7 @@ public class Controller implements Initializable {
 	public void selector(ActionEvent event) throws IOException {
 		FileChooser fileChooser = new FileChooser();
 
-		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MP3 Files", "*.mp3", "*.mpeg3",
-				"*.wma", "*.wav");
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MP3 Files", "*.mp3", "*.mpeg3");
 		fileChooser.getExtensionFilters().add(extFilter);
 
 		List<File> list = fileChooser.showOpenMultipleDialog(null);
@@ -915,6 +914,8 @@ public class Controller implements Initializable {
 		if (timeout.contains(".")) {
 			min = Integer.parseInt(timeout.substring(0, timeout.indexOf(".")));
 			sec = Integer.parseInt(timeout.substring(timeout.indexOf(".") + 1));
+		} else {
+			min = Integer.parseInt(timeout);
 		}
 
 		if (select.size() != 0 && (min != 0 || sec != 00)) {
