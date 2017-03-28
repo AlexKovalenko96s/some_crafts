@@ -908,7 +908,16 @@ public class Controller implements Initializable {
 		ObservableList<String> select;
 		ArrayList<Integer> index = new ArrayList<>();
 		select = lv_clip.getSelectionModel().getSelectedItems();
-		if (select.size() != 0) {
+
+		String timeout = tf_timeout.getText();
+		int min = 0, sec = 0;
+
+		if (timeout.contains(".")) {
+			min = Integer.parseInt(timeout.substring(0, timeout.indexOf(".")));
+			sec = Integer.parseInt(timeout.substring(timeout.indexOf(".") + 1));
+		}
+
+		if (select.size() != 0 && (min != 0 || sec != 00)) {
 			for (int i = 0; i < clipList.size(); i++) {
 				for (int j = 0; j < select.size(); j++) {
 					if (clipList.get(i).equals(select.get(j))) {
@@ -918,7 +927,7 @@ public class Controller implements Initializable {
 			}
 
 			for (int i = index.size() - 1; i >= 0; i--) {
-				clipLenghtList.set(index.get(i), Integer.toString(Integer.parseInt(tf_timeout.getText()) * 60));
+				clipLenghtList.set(index.get(i), Integer.toString((min * 60) + sec));
 			}
 			tf_timeout.setText("");
 		}
