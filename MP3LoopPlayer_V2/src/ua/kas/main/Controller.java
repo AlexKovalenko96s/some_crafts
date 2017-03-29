@@ -624,11 +624,18 @@ public class Controller implements Initializable {
 				float v = 1.0f;
 				volumeControl.setValue(v);
 				new Thread() {
+					@SuppressWarnings("static-access")
 					@Override
 					public void run() {
 						float v = 1.0F;
-						while (v > 0.001F) {
-							v -= 0.000036f;
+						for (int i = 0; i < 50; i++) {
+							try {
+								this.currentThread().sleep(100);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							v -= 0.02f;
 							volumeControl.setValue(v);
 						}
 						playClips();
