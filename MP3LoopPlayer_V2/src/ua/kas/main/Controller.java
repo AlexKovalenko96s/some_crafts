@@ -175,7 +175,43 @@ public class Controller implements Initializable {
 				}
 			});
 		}
-		if (autoOn) {
+	}
+
+	public void stopAndPlay() {
+		if (player != null || playerForClip != null) {
+			try {
+				player.close();
+			} catch (Exception e) {
+			}
+			try {
+				playerForClip.close();
+			} catch (Exception e) {
+
+			}
+
+			pauseLocation = 0;
+			songTotalLength = 0;
+			countClip = 0;
+			countMusic = 0;
+
+			pause = false;
+			pauseOnMusic = false;
+			pauseOnClip = false;
+			nowClip = false;
+
+			timeLineLow.stop();
+
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						l_name.setText("Stop");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
 			start();
 			autoOn = false;
 		}
@@ -532,8 +568,9 @@ public class Controller implements Initializable {
 					if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60) && !autoOn) {
 						autoOn = true;
 						dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s;
-						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
+						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stopAndPlay()));
 						timeline.play();
+						run();
 					} else {
 						autoOn = true;
 						difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s;
@@ -544,7 +581,7 @@ public class Controller implements Initializable {
 						timelineOn.play();
 
 						dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn;
-						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stop()));
+						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stopAndPlay()));
 						timeline.play();
 					}
 				}
@@ -661,7 +698,7 @@ public class Controller implements Initializable {
 					play(fileLocation);
 
 					Info source = Port.Info.SPEAKER;
-					if (AudioSystem.isLineSupported(source)) {
+					if (AudioSystem.isLineSupported(source) && Integer.parseInt(clipLenghtList.get(countClip)) != 0) {
 						try {
 							Port outline = (Port) AudioSystem.getLine(source);
 							outline.open();
@@ -685,9 +722,15 @@ public class Controller implements Initializable {
 							ex.printStackTrace();
 						}
 					}
-					timeLineLow = new Timeline(new KeyFrame(
-							Duration.seconds(Integer.parseInt(clipLenghtList.get(countClip)) - 5), ae -> soundLow()));
-					timeLineLow.play();
+
+					if (Integer.parseInt(clipLenghtList.get(countClip)) == 0) {
+						playClips();
+					} else {
+						timeLineLow = new Timeline(
+								new KeyFrame(Duration.seconds(Integer.parseInt(clipLenghtList.get(countClip)) - 5),
+										ae -> soundLow()));
+						timeLineLow.play();
+					}
 				}
 			}
 		}.start();
@@ -918,7 +961,7 @@ public class Controller implements Initializable {
 			min = Integer.parseInt(timeout);
 		}
 
-		if (select.size() != 0 && (min != 0 || sec != 00)) {
+		if (select.size() != 0) {
 			for (int i = 0; i < clipList.size(); i++) {
 				for (int j = 0; j < select.size(); j++) {
 					if (clipList.get(i).equals(select.get(j))) {
