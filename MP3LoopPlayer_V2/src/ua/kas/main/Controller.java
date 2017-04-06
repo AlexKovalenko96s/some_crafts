@@ -628,14 +628,14 @@ public class Controller implements Initializable {
 					@Override
 					public void run() {
 						float v = 1.0F;
-						for (int i = 0; i < 50; i++) {
+						for (int i = 0; i < 20; i++) {
 							try {
-								this.currentThread().sleep(100);
+								this.currentThread().sleep(250);
 							} catch (InterruptedException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
-							v -= 0.02f;
+							v -= 0.051f;
 							volumeControl.setValue(v);
 						}
 						playClips();
@@ -796,6 +796,8 @@ public class Controller implements Initializable {
 								}
 							});
 						}
+					} else {
+						// JOptionPane.showMessageDialog(null, "not to next");
 					}
 				} catch (JavaLayerException e) {
 					e.printStackTrace();
