@@ -575,7 +575,7 @@ public class Controller implements Initializable {
 						autoOn = true;
 						difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s;
 						if (difOn < 0) {
-							difOn = (24 * 3600) - difOn;
+							difOn = (24 * 3600) - Math.abs(difOn);
 						}
 						Timeline timelineOn = new Timeline(new KeyFrame(Duration.seconds(difOn), ae -> run()));
 						timelineOn.play();
