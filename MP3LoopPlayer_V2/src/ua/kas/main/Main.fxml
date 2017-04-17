@@ -49,17 +49,17 @@
             <Font name="Times New Roman" size="12.0" />
          </font>
       </Label>
-      <TextField fx:id="tf_on" layoutX="493.0" layoutY="167.0" prefHeight="25.0" prefWidth="55.0" promptText="hh.mm">
+      <TextField fx:id="tf_on" layoutX="493.0" layoutY="180.0" prefHeight="25.0" prefWidth="55.0" promptText="hh.mm">
          <font>
             <Font name="Times New Roman" size="12.0" />
          </font>
       </TextField>
-      <TextField fx:id="tf_off" layoutX="568.0" layoutY="168.0" prefHeight="25.0" prefWidth="56.0" promptText="hh.mm">
+      <TextField fx:id="tf_off" layoutX="568.0" layoutY="181.0" prefHeight="25.0" prefWidth="56.0" promptText="hh.mm">
          <font>
             <Font name="Times New Roman" size="12.0" />
          </font>
       </TextField>
-      <CheckBox fx:id="cb_autoOnOff" layoutX="342.0" layoutY="172.0" mnemonicParsing="false" text="автоматичкое вкл/выкл">
+      <CheckBox fx:id="cb_autoOnOff" layoutX="342.0" layoutY="185.0" mnemonicParsing="false" text="автоматичкое вкл/выкл">
          <font>
             <Font name="Times New Roman" size="12.0" />
          </font>
@@ -156,7 +156,7 @@
             <ListView fx:id="lv_clip" prefHeight="283.0" prefWidth="268.0" />
          </content>
       </ScrollPane>
-      <Label layoutX="556.0" layoutY="172.0" prefHeight="14.0" prefWidth="6.0" text="-">
+      <Label layoutX="556.0" layoutY="185.0" prefHeight="14.0" prefWidth="6.0" text="-">
          <font>
             <Font name="Times New Roman" size="14.0" />
          </font>
@@ -191,5 +191,12 @@
             <Font name="Times New Roman" size="12.0" />
          </font>
       </Label>
+      <CheckBox fx:id="cb_monday" layoutX="342.0" layoutY="157.0" mnemonicParsing="false" text="пн." />
+      <CheckBox fx:id="cb_tuesday" layoutX="382.0" layoutY="157.0" mnemonicParsing="false" text="вт." />
+      <CheckBox fx:id="cb_wednesday" layoutX="422.0" layoutY="157.0" mnemonicParsing="false" text="ср." />
+      <CheckBox fx:id="cb_thursday" layoutX="464.0" layoutY="157.0" mnemonicParsing="false" text="чт." />
+      <CheckBox fx:id="cb_friday" layoutX="505.0" layoutY="157.0" mnemonicParsing="false" text="пт." />
+      <CheckBox fx:id="cb_saturday" layoutX="545.0" layoutY="157.0" mnemonicParsing="false" text="сб." />
+      <CheckBox fx:id="cb_sunday" layoutX="585.0" layoutY="157.0" mnemonicParsing="false" text="вр." />
    </children>
 </AnchorPane>

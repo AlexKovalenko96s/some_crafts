@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -60,6 +62,20 @@ public class Controller implements Initializable {
 	TextField tf_off;
 
 	@FXML
+	CheckBox cb_monday;
+	@FXML
+	CheckBox cb_tuesday;
+	@FXML
+	CheckBox cb_wednesday;
+	@FXML
+	CheckBox cb_thursday;
+	@FXML
+	CheckBox cb_friday;
+	@FXML
+	CheckBox cb_saturday;
+	@FXML
+	CheckBox cb_sunday;
+	@FXML
 	CheckBox cb_autoOnOff;
 
 	@FXML
@@ -104,6 +120,7 @@ public class Controller implements Initializable {
 	private ArrayList<String> musicPath = new ArrayList<>();
 	private ArrayList<String> clipPath = new ArrayList<>();
 	private ArrayList<String> clipLenghtList = new ArrayList<>();
+	private ArrayList<CheckBox> weekList = new ArrayList<>();
 
 	private FileInputStream FIS;
 	private BufferedInputStream BIS;
@@ -138,6 +155,10 @@ public class Controller implements Initializable {
 		lv_clip.setEditable(true);
 		lv_music.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		lv_clip.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+		Collections.addAll(weekList, cb_monday, cb_tuesday, cb_wednesday, cb_thursday, cb_friday, cb_saturday,
+				cb_sunday);
+		System.out.println(new SimpleDateFormat("EEEE").format(new Date()));
 	}
 
 	public void stop() {
@@ -549,41 +570,67 @@ public class Controller implements Initializable {
 
 				long dif = 0;
 				long difOn = 0;
+				int dayToday = 0;
 
-				if (cb_autoOnOff.isSelected()) {
+				if (cb_autoOnOff.isSelected() && (cb_sunday.isSelected() || cb_monday.isSelected()
+						|| cb_thursday.isSelected() || cb_wednesday.isSelected() || cb_tuesday.isSelected()
+						|| cb_friday.isSelected() || cb_saturday.isSelected())) {
+
+					String day = new SimpleDateFormat("EEEE").format(new Date());
 					String curStringDate = new SimpleDateFormat("HH.mm.ss").format(System.currentTimeMillis());
+
+					if (day.equals("понедельник"))
+						dayToday = 0;
+					else if (day.equals("вторник"))
+						dayToday = 1;
+					else if (day.equals("среда"))
+						dayToday = 2;
+					else if (day.equals("четверг"))
+						dayToday = 3;
+					else if (day.equals("пятница"))
+						dayToday = 4;
+					else if (day.equals("суббота"))
+						dayToday = 5;
+					else if (day.equals("воскресенье"))
+						dayToday = 6;
+
+					int howDays = countDays(dayToday);
+
 					long h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
 					long m = Integer.parseInt(
 							curStringDate.substring(curStringDate.indexOf(".") + 1, curStringDate.lastIndexOf(".")));
 					long s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
 
 					String on = tf_on.getText();
+					String off = tf_off.getText();
+
 					long hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
 					long mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
 
-					String off = tf_off.getText();
 					long hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
 					long mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
 
-					if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60) && !autoOn) {
+					if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60) && !autoOn && howDays == 0) {
 						autoOn = true;
-						dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s;
+						dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s + (howDays * 86400);
 						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stopAndPlay()));
 						timeline.play();
 						run();
 					} else {
 						autoOn = true;
-						difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s;
+						difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s + (howDays * 86400);
 						if (difOn < 0) {
 							difOn = (24 * 3600) - Math.abs(difOn);
 						}
 						Timeline timelineOn = new Timeline(new KeyFrame(Duration.seconds(difOn), ae -> run()));
 						timelineOn.play();
 
-						dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn;
+						dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn + (howDays * 86400);
 						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stopAndPlay()));
 						timeline.play();
 					}
+				} else if (cb_autoOnOff.isSelected()) {
+					JOptionPane.showMessageDialog(null, "Укажите дни недели!");
 				}
 
 				System.out.println(difOn + " " + dif);
@@ -1140,5 +1187,24 @@ public class Controller implements Initializable {
 
 			lv_clip.setItems(clipList);
 		}
+	}
+
+	public int countDays(Integer dayToday) {
+		int count = 0;
+
+		for (int i = dayToday; i < weekList.size(); i++) {
+			if (weekList.get(i).isSelected()) {
+				return count;
+			}
+			count++;
+		}
+
+		for (int i = 0; i < dayToday; i++) {
+			if (weekList.get(i).isSelected()) {
+				return count;
+			}
+			count++;
+		}
+		return count;
 	}
 }
