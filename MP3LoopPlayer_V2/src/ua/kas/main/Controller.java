@@ -182,6 +182,7 @@ public class Controller implements Initializable {
 			pauseOnMusic = false;
 			pauseOnClip = false;
 			nowClip = false;
+			autoOn = false;
 
 			timeLineLow.stop();
 
@@ -579,6 +580,20 @@ public class Controller implements Initializable {
 					String day = new SimpleDateFormat("EEEE").format(new Date());
 					String curStringDate = new SimpleDateFormat("HH.mm.ss").format(System.currentTimeMillis());
 
+					long h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
+					long m = Integer.parseInt(
+							curStringDate.substring(curStringDate.indexOf(".") + 1, curStringDate.lastIndexOf(".")));
+					long s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
+
+					String on = tf_on.getText();
+					String off = tf_off.getText();
+
+					long hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
+					long mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
+
+					long hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
+					long mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
+
 					if (day.equals("понедельник"))
 						dayToday = 0;
 					else if (day.equals("вторник"))
@@ -594,23 +609,16 @@ public class Controller implements Initializable {
 					else if (day.equals("воскресенье"))
 						dayToday = 6;
 
-					int howDays = countDays(dayToday);
+					int howDays = 0;
 
-					long h = Integer.parseInt(curStringDate.substring(0, curStringDate.indexOf(".")));
-					long m = Integer.parseInt(
-							curStringDate.substring(curStringDate.indexOf(".") + 1, curStringDate.lastIndexOf(".")));
-					long s = Integer.parseInt(curStringDate.substring(curStringDate.lastIndexOf(".") + 1));
+					if ((h * 3600) + (m * 60) >= (hOff * 3600) + (mOff * 60)) {
+						howDays = countDays(dayToday + 1);
+						howDays++;
+					} else
+						howDays = countDays(dayToday);
 
-					String on = tf_on.getText();
-					String off = tf_off.getText();
-
-					long hOn = Integer.parseInt(on.substring(0, on.indexOf(".")));
-					long mOn = Integer.parseInt(on.substring(on.indexOf(".") + 1));
-
-					long hOff = Integer.parseInt(off.substring(0, off.indexOf(".")));
-					long mOff = Integer.parseInt(off.substring(off.indexOf(".") + 1));
-
-					if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60) && !autoOn && howDays == 0) {
+					if ((h * 3600) + (m * 60) >= (hOn * 3600) + (mOn * 60) && !autoOn && howDays == 0
+							&& (h * 3600) + (m * 60) <= (hOff * 3600) + (mOff * 60)) {
 						autoOn = true;
 						dif = (hOff * 3600 - h * 3600) + (mOff * 60 - m * 60) - s + (howDays * 86400);
 						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stopAndPlay()));
@@ -618,6 +626,7 @@ public class Controller implements Initializable {
 						run();
 					} else {
 						autoOn = true;
+						System.out.println(howDays);
 						difOn = (hOn * 3600 - h * 3600) + (mOn * 60 - m * 60) - s + (howDays * 86400);
 						if (difOn < 0) {
 							difOn = (24 * 3600) - Math.abs(difOn);
@@ -625,7 +634,7 @@ public class Controller implements Initializable {
 						Timeline timelineOn = new Timeline(new KeyFrame(Duration.seconds(difOn), ae -> run()));
 						timelineOn.play();
 
-						dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn + (howDays * 86400);
+						dif = (hOff * 3600 - hOn * 3600) + (mOff * 60 - mOn * 60) + difOn;
 						Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(dif), ae -> stopAndPlay()));
 						timeline.play();
 					}
