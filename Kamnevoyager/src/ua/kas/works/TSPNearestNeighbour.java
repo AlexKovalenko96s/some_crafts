@@ -1,8 +1,16 @@
 package ua.kas.works;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.InputMismatchException;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Stack;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 
 public class TSPNearestNeighbour {
 	private int numberOfNodes;
@@ -47,7 +55,7 @@ public class TSPNearestNeighbour {
 		}
 	}
 
-	public static void main(String... arg) {
+	public static void main(String... arg) throws IOException {
 		int number_of_nodes;
 		Scanner scanner = null;
 		try {
@@ -55,12 +63,44 @@ public class TSPNearestNeighbour {
 			scanner = new Scanner(System.in);
 			number_of_nodes = scanner.nextInt();
 			int adjacency_matrix[][] = new int[number_of_nodes + 1][number_of_nodes + 1];
-			System.out.println("Enter the adjacency matrix");
-			for (int i = 1; i <= number_of_nodes; i++) {
-				for (int j = 1; j <= number_of_nodes; j++) {
-					adjacency_matrix[i][j] = scanner.nextInt();
-				}
+
+			// for excel enter
+			InputStream in = new FileInputStream("test.xls");
+			HSSFWorkbook wb = new HSSFWorkbook(in);
+
+			Sheet sheet = wb.getSheetAt(0);
+			Iterator<Row> it = sheet.iterator();
+			int x, y, weight;
+			while (it.hasNext()) {
+				Row row = it.next();
+
+				x = (int) row.getCell(0).getNumericCellValue() + 1;
+				y = (int) row.getCell(1).getNumericCellValue() + 1;
+				weight = (int) row.getCell(2).getNumericCellValue();
+
+				adjacency_matrix[x][y] = weight;
+				adjacency_matrix[y][x] = weight;
 			}
+			wb.close();
+
+			// // for console enter
+			//
+			// System.out.println("Enter the adjacency matrix");
+			// for (int i = 1; i <= number_of_nodes; i++) {
+			// for (int j = 1; j <= number_of_nodes; j++) {
+			// adjacency_matrix[i][j] = scanner.nextInt();
+			// }
+			// }
+
+			// // system out
+			//
+			// for (int i = 0; i < adjacency_matrix.length; i++) {
+			// for (int j = 0; j < adjacency_matrix[i].length; j++) {
+			// System.out.print(adjacency_matrix[i][j] + " ");
+			// }
+			// System.out.println();
+			// }
+
 			for (int i = 1; i <= number_of_nodes; i++) {
 				for (int j = 1; j <= number_of_nodes; j++) {
 					if (adjacency_matrix[i][j] == 1 && adjacency_matrix[j][i] == 0) {
