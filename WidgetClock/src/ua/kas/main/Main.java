@@ -40,7 +40,6 @@ public class Main extends Application {
 			primaryStage.setY(0);
 
 			launchClock(root);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
