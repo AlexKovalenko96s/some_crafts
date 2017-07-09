@@ -27,6 +27,7 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		try {
 			Group root = new Group();
+
 			primaryStage.initStyle(StageStyle.TRANSPARENT);
 			Scene scene = new Scene(root, 400, 400, Color.TRANSPARENT);
 			primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("icon.png")));
@@ -36,6 +37,7 @@ public class Main extends Application {
 			primaryStage.show();
 
 			root.setEffect(new DropShadow(15, Color.GRAY));
+
 			primaryStage.setX(Screen.getPrimary().getBounds().getWidth() - 400);
 			primaryStage.setY(0);
 
