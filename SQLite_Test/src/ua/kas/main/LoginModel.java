@@ -12,7 +12,6 @@ public class LoginModel {
 
 	public LoginModel() {
 		connection = SqliteConnection.Connector();
-
 		if (connection == null)
 			System.exit(0);
 	}
