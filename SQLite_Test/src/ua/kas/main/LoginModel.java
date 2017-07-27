@@ -29,7 +29,6 @@ public class LoginModel {
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
 		String query = "select * from employee where username = ? and password = ?";
-
 		try {
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, login);
