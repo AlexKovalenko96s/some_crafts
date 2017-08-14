@@ -17,6 +17,7 @@ public class First extends HttpServlet {
 			throws ServletException, IOException {
 
 		response.setContentType("text/html");
+
 		response.setCharacterEncoding("UTF-8");
 
 		PrintWriter pw = response.getWriter();
