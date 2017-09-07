@@ -16,9 +16,9 @@ public class Main {
 		IplImage image = IplImage.createFrom(img);
 
 		// IplImage image = cvLoadImage("test.jpg");
+
 		CanvasFrame canvas = new CanvasFrame("Demo");
 		canvas.showImage(image);
 		canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 	}
-
 }
