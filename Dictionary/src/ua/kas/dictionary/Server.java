@@ -8,11 +8,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
-public class Server implements Runnable{
+public class Server implements Runnable {
 
 	static String line = "";
 	File file = new File("dictionary.txt");
@@ -20,28 +19,29 @@ public class Server implements Runnable{
 	private static ServerSocket server;
 	static private ObjectOutputStream output;
 	static private ObjectInputStream input;
-	
+
 	@Override
 	public void run() {
-		
+
 		try {
-			server = new ServerSocket(5678 , 10);
-		} catch (IOException e) {e.printStackTrace();}
-		
-		while(true){
-			
+			server = new ServerSocket(5678, 10);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		while (true) {
 			try {
 				connection = server.accept();
 				output = new ObjectOutputStream(connection.getOutputStream());
 				input = new ObjectInputStream(connection.getInputStream());
 				String string = (String) input.readObject();
-				
+
 				try {
 					FileReader fr = new FileReader(file);
 					BufferedReader br = new BufferedReader(fr);
-					
-					while((line = br.readLine()) != null){
-						if(line.contains(string)){
+
+					while ((line = br.readLine()) != null) {
+						if (line.contains(string)) {
 							System.out.println(line);
 							output.writeUTF(line);
 						}
@@ -49,10 +49,13 @@ public class Server implements Runnable{
 					System.out.println(output);
 					fr.close();
 					br.close();
-					
-				} catch (IOException e1) {JOptionPane.showMessageDialog(null, "File not found");}		
-			} catch (IOException | ClassNotFoundException e) {e.printStackTrace();}
-			
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "File not found");
+				}
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+
 		}
 	}
 }

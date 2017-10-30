@@ -9,29 +9,34 @@ import java.net.Socket;
 
 import javax.swing.JOptionPane;
 
-public class Threads implements Runnable{
+public class Threads implements Runnable {
 
 	static private Socket connection;
 	static private ObjectOutputStream output;
 	static private ObjectInputStream input;
-	
+
 	@Override
 	public void run() {
-		
-		while(true){
+
+		while (true) {
 			try {
 				connection = new Socket(InetAddress.getByName("127.0.0.1"), 5678);
 				output = new ObjectOutputStream(connection.getOutputStream());
-				input = new ObjectInputStream(connection.getInputStream());		
+				input = new ObjectInputStream(connection.getInputStream());
 				JOptionPane.showMessageDialog(null, (String) input.readObject());
-			} catch (IOException e) {e.printStackTrace();
-			} catch (HeadlessException e) {e.printStackTrace();
-			} catch (ClassNotFoundException e) {e.printStackTrace();}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (HeadlessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 	}
-	
-	static void sendDate(Object string) throws IOException{
+
+	static void sendDate(Object string) throws IOException {
 		output.flush();
 		output.writeObject(string);
 	}
+
 }
