@@ -19,6 +19,7 @@ public class Threads implements Runnable {
 	public void run() {
 
 		while (true) {
+
 			try {
 				connection = new Socket(InetAddress.getByName("127.0.0.1"), 5678);
 				output = new ObjectOutputStream(connection.getOutputStream());

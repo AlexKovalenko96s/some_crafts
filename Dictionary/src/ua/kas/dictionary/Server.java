@@ -30,6 +30,7 @@ public class Server implements Runnable {
 		}
 
 		while (true) {
+
 			try {
 				connection = server.accept();
 				output = new ObjectOutputStream(connection.getOutputStream());
@@ -58,4 +59,5 @@ public class Server implements Runnable {
 
 		}
 	}
+
 }
