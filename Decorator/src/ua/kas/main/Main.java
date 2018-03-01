@@ -6,5 +6,4 @@ public class Main {
 		Decorator decorator = new FaceBook(new Phone(new StandartNotification()));
 		decorator.getMessage();
 	}
-
 }

@@ -11,4 +11,5 @@ public class FaceBook extends Decorator {
 	public void getMessage() {
 		System.out.println("Hello from FaceBook!");
 	}
+
 }
